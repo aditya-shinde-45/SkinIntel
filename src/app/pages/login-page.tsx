@@ -32,8 +32,8 @@ export function LoginPage() {
             </p>
             <div className="mt-12">
               <img
-                src="https://images.unsplash.com/photo-1768323286301-6fd85d28f47b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxBSSUyMHRlY2hub2xvZ3klMjBoZWFsdGhjYXJlfGVufDF8fHx8MTc3Mjk5NDY0Mnww&ixlib=rb-4.1.0&q=80&w=1080"
-                alt="AI Skincare"
+                src="https://images.unsplash.com/photo-1741278232341-33534050414c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxza2luY2FyZSUyMGFuYWx5c2lzJTIwZGVybWF0b2xvZ3l8ZW58MXx8fHwxNzcyOTk0NjQxfDA&ixlib=rb-4.1.0&q=80&w=1080"
+                alt="Skincare analysis"
                 className="rounded-2xl shadow-2xl"
               />
             </div>

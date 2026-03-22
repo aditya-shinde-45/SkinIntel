@@ -143,7 +143,7 @@ export function ResultPage() {
       image: 'https://images.unsplash.com/photo-1643379850623-7eb6442cd262?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzZXJ1bSUyMGJvdHRsZSUyMHNraW5jYXJlfGVufDF8fHx8MTc3Mjk5NDgwMHww&ixlib=rb-4.1.0&q=80&w=1080',
       name: 'Advanced Vitamin C Eye Serum',
       brand: 'SkinRevive',
-      price: '$34.99',
+      price: '₹2,899',
       rating: 5,
       description: 'Reduces dark circles and brightens under-eye area with 15% Vitamin C',
       availability: ['Amazon', 'Nykaa', 'Flipkart'],
@@ -152,7 +152,7 @@ export function ResultPage() {
       image: 'https://images.unsplash.com/photo-1731657979854-30bb7001cc8a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxleWUlMjBjcmVhbSUyMHByb2R1Y3R8ZW58MXx8fHwxNzcyOTMyNzE3fDA&ixlib=rb-4.1.0&q=80&w=1080',
       name: 'Peptide Complex Eye Cream',
       brand: 'DermaGlow',
-      price: '$42.50',
+      price: '₹3,499',
       rating: 5,
       description: 'Anti-aging peptides reduce puffiness and fine lines around eyes',
       availability: ['Amazon', 'Sephora', 'Ulta'],
@@ -161,7 +161,7 @@ export function ResultPage() {
       image: 'https://images.unsplash.com/photo-1634449277883-534da4f7c97a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjcmVhbSUyMGphciUyMGNvc21ldGljfGVufDF8fHx8MTc3Mjk5NDgwMHww&ixlib=rb-4.1.0&q=80&w=1080',
       name: 'Hydrating Eye Treatment Gel',
       brand: 'AquaLux',
-      price: '$28.99',
+      price: '₹2,399',
       rating: 4,
       description: 'Cooling gel formula with hyaluronic acid for instant hydration',
       availability: ['Amazon', 'Nykaa'],
@@ -170,7 +170,7 @@ export function ResultPage() {
       image: 'https://images.unsplash.com/photo-1583334516865-e4240dc3fc79?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2lzdHVyaXplciUyMGJvdHRsZSUyMGJlYXV0eXxlbnwxfHx8fDE3NzI5OTQ4MDF8MA&ixlib=rb-4.1.0&q=80&w=1080',
       name: 'Retinol Eye Recovery Night Cream',
       brand: 'NightGlow',
-      price: '$39.99',
+      price: '₹3,299',
       rating: 5,
       description: 'Overnight treatment with retinol to diminish dark circles',
       availability: ['Flipkart', 'Nykaa', 'Amazon'],
@@ -274,6 +274,17 @@ export function ResultPage() {
             </div>
           </div>
 
+          {/* Disclaimer */}
+          <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-6 mb-8">
+            <h4 className="font-semibold text-[#2B2B2B] mb-2 flex items-center gap-2">
+              <span className="text-yellow-600">⚠️</span>
+              Important Disclaimer
+            </h4>
+            <p className="text-sm text-gray-700 leading-relaxed">
+              SkinIntel provides AI-based skincare awareness and product suitability guidance for informational and academic purposes only. It does not offer medical diagnosis or replace professional dermatological advice. For serious or persistent skin concerns, please consult a licensed dermatologist.
+            </p>
+          </div>
+
           {/* Product Recommendations */}
           <div className="mb-12">
             <div className="text-center mb-8">
@@ -294,17 +305,6 @@ export function ResultPage() {
                 />
               ))}
             </div>
-          </div>
-
-          {/* Disclaimer */}
-          <div className="bg-yellow-50 border border-yellow-200 rounded-2xl p-6">
-            <h4 className="font-semibold text-[#2B2B2B] mb-2 flex items-center gap-2">
-              <span className="text-yellow-600">⚠️</span>
-              Important Disclaimer
-            </h4>
-            <p className="text-sm text-gray-700 leading-relaxed">
-              SkinIntel provides AI-based skincare awareness and product suitability guidance for informational and academic purposes only. It does not offer medical diagnosis or replace professional dermatological advice. For serious or persistent skin concerns, please consult a licensed dermatologist.
-            </p>
           </div>
         </div>
       </div>
