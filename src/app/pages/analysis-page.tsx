@@ -3,13 +3,12 @@ import { useNavigate } from 'react-router';
 import { Navbar } from '../components/navbar';
 import { Footer } from '../components/footer';
 import { Button } from '../components/button';
-import { Upload, Link as LinkIcon, Sparkles, DollarSign } from 'lucide-react';
+import { Upload, Sparkles } from 'lucide-react';
 
 export function AnalysisPage() {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [imageUrl, setImageUrl] = useState('');
   const [country, setCountry] = useState('');
   const [priceRange, setPriceRange] = useState([200, 2000]);
   const [isDragging, setIsDragging] = useState(false);
@@ -40,12 +39,6 @@ export function AnalysisPage() {
     }
   };
 
-  const handleUrlSubmit = () => {
-    if (imageUrl) {
-      setSelectedImage(imageUrl);
-    }
-  };
-
   const handleAnalyze = () => {
     if (selectedImage && country) {
       navigate('/results', {
@@ -56,6 +49,14 @@ export function AnalysisPage() {
         },
       });
     }
+  };
+
+  const handleMinPriceChange = (value: number) => {
+    setPriceRange((prev) => [Math.min(value, prev[1]), prev[1]]);
+  };
+
+  const handleMaxPriceChange = (value: number) => {
+    setPriceRange((prev) => [prev[0], Math.max(value, prev[0])]);
   };
 
   return (
@@ -151,31 +152,6 @@ export function AnalysisPage() {
               />
             </div>
 
-            {/* URL Input */}
-            <div>
-              <label className="block text-sm font-semibold text-[#2B2B2B] mb-3">
-                Or Paste Image URL
-              </label>
-
-              <div className="flex gap-3">
-                <div className="flex-1 relative">
-                  <LinkIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-
-                  <input
-                    type="url"
-                    value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)}
-                    placeholder="https://example.com/image.jpg"
-                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#3EB6B1]"
-                  />
-                </div>
-
-                <Button onClick={handleUrlSubmit} variant="outline">
-                  Load Image
-                </Button>
-              </div>
-            </div>
-
             <div className="border-t border-gray-200"></div>
 
             {/* Country */}
@@ -217,17 +193,39 @@ export function AnalysisPage() {
                   </span>
                 </div>
 
-                <input
-                  type="range"
-                  min="200"
-                  max="3000"
-                  step="100"
-                  value={priceRange[1]}
-                  onChange={(e) =>
-                    setPriceRange([priceRange[0], parseInt(e.target.value)])
-                  }
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#3EB6B1]"
-                />
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+                      <span>Minimum</span>
+                      <span>₹{priceRange[0]}</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="200"
+                      max="3000"
+                      step="100"
+                      value={priceRange[0]}
+                      onChange={(e) => handleMinPriceChange(parseInt(e.target.value, 10))}
+                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#3EB6B1]"
+                    />
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+                      <span>Maximum</span>
+                      <span>₹{priceRange[1]}</span>
+                    </div>
+                    <input
+                      type="range"
+                      min="200"
+                      max="3000"
+                      step="100"
+                      value={priceRange[1]}
+                      onChange={(e) => handleMaxPriceChange(parseInt(e.target.value, 10))}
+                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#3EB6B1]"
+                    />
+                  </div>
+                </div>
 
                 <div className="flex justify-between text-xs text-gray-500">
                   <span>₹200</span>

@@ -136,29 +136,84 @@ export function ResultPage() {
   const location = useLocation();
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
 
-  const { image } = location.state || {};
+  const { image, priceRange } =
+    (location.state as { image?: string; priceRange?: number[] } | undefined) || {};
 
   const mockProducts = [
     {
-      image: 'https://images.unsplash.com/photo-1643379850623-7eb6442cd262?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzZXJ1bSUyMGJvdHRsZSUyMHNraW5jYXJlfGVufDF8fHx8MTc3Mjk5NDgwMHww&ixlib=rb-4.1.0&q=80&w=1080',
-      name: 'Advanced Vitamin C Eye Serum',
-      brand: 'SkinRevive',
-      price: '₹2,899',
-      rating: 5,
-      description: 'Reduces dark circles and brightens under-eye area with 15% Vitamin C',
-      availability: ['Amazon', 'Nykaa', 'Flipkart'],
+      image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+      name: 'Cooling Caffeine Under-Eye Roll-On',
+      brand: 'FreshMint',
+      price: '₹299',
+      rating: 4,
+      description: 'Depuffs tired eyes with caffeine and a cooling metal roller',
+      availability: ['Amazon', 'Flipkart'],
     },
     {
-      image: 'https://images.unsplash.com/photo-1731657979854-30bb7001cc8a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxleWUlMjBjcmVhbSUyMHByb2R1Y3R8ZW58MXx8fHwxNzcyOTMyNzE3fDA&ixlib=rb-4.1.0&q=80&w=1080',
-      name: 'Peptide Complex Eye Cream',
+      image: 'https://images.unsplash.com/photo-1617897903246-719242758050?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+      name: 'Hydra Bright Eye Gel',
+      brand: 'GlowLeaf',
+      price: '₹499',
+      rating: 4,
+      description: 'Lightweight gel with aloe and niacinamide for daily hydration',
+      availability: ['Nykaa', 'Amazon'],
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1631214540242-05ad8d0e5b04?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+      name: 'Vitamin E Night Repair Cream',
+      brand: 'SoftDerma',
+      price: '₹799',
+      rating: 4,
+      description: 'Repairs overnight dryness and supports smoother under-eye skin',
+      availability: ['Amazon', 'Nykaa', 'Myntra'],
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+      name: 'Peptide Lift Eye Cream',
       brand: 'DermaGlow',
-      price: '₹3,499',
+      price: '₹1,099',
       rating: 5,
-      description: 'Anti-aging peptides reduce puffiness and fine lines around eyes',
-      availability: ['Amazon', 'Sephora', 'Ulta'],
+      description: 'Peptide-rich formula that improves elasticity and firmness',
+      availability: ['Sephora', 'Amazon'],
     },
     {
-      image: 'https://images.unsplash.com/photo-1634449277883-534da4f7c97a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjcmVhbSUyMGphciUyMGNvc21ldGljfGVufDF8fHx8MTc3Mjk5NDgwMHww&ixlib=rb-4.1.0&q=80&w=1080',
+      image: 'https://images.unsplash.com/photo-1526758097130-bab247274f58?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+      name: 'Retinol Micro-Dose Eye Balm',
+      brand: 'NightGlow',
+      price: '₹1,399',
+      rating: 4,
+      description: 'Beginner-friendly retinol balm for fine lines and texture',
+      availability: ['Nykaa', 'Flipkart'],
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+      name: 'Hyaluronic Eye Quench Serum',
+      brand: 'AquaLux',
+      price: '₹1,699',
+      rating: 4,
+      description: 'Intense hydration with multi-weight hyaluronic acid complex',
+      availability: ['Amazon', 'Nykaa'],
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1570194065650-d99fb4bedf0a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+      name: 'Dark Circle Corrector Cream',
+      brand: 'ToneFix',
+      price: '₹1,999',
+      rating: 5,
+      description: 'Targets pigmentation with tranexamic acid and vitamin C',
+      availability: ['Amazon', 'Nykaa', 'Purplle'],
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1629198735660-e39ea93f5c18?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+      name: 'Barrier Rescue Eye Butter',
+      brand: 'CalmSkin',
+      price: '₹2,199',
+      rating: 4,
+      description: 'Ceramide-rich butter for dry, sensitive under-eye skin',
+      availability: ['Flipkart', 'Myntra'],
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1631214524020-6f3f80c5ea1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
       name: 'Hydrating Eye Treatment Gel',
       brand: 'AquaLux',
       price: '₹2,399',
@@ -167,15 +222,41 @@ export function ResultPage() {
       availability: ['Amazon', 'Nykaa'],
     },
     {
-      image: 'https://images.unsplash.com/photo-1583334516865-e4240dc3fc79?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2lzdHVyaXplciUyMGJvdHRsZSUyMGJlYXV0eXxlbnwxfHx8fDE3NzI5OTQ4MDF8MA&ixlib=rb-4.1.0&q=80&w=1080',
+      image: 'https://images.unsplash.com/photo-1643379850623-7eb6442cd262?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzZXJ1bSUyMGJvdHRsZSUyMHNraW5jYXJlfGVufDF8fHx8MTc3Mjk5NDgwMHww&ixlib=rb-4.1.0&q=80&w=1080',
+      name: 'Advanced Vitamin C Eye Serum',
+      brand: 'SkinRevive',
+      price: '₹2,699',
+      rating: 5,
+      description: 'Reduces dark circles and brightens under-eye area with 15% Vitamin C',
+      availability: ['Amazon', 'Nykaa', 'Flipkart'],
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1731657979854-30bb7001cc8a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxleWUlMjBjcmVhbSUyMHByb2R1Y3R8ZW58MXx8fHwxNzcyOTMyNzE3fDA&ixlib=rb-4.1.0&q=80&w=1080',
+      name: 'Peptide Complex Eye Cream',
+      brand: 'DermaGlow',
+      price: '₹2,899',
+      rating: 5,
+      description: 'Anti-aging peptides reduce puffiness and fine lines around eyes',
+      availability: ['Amazon', 'Sephora', 'Ulta'],
+    },
+    {
+      image: 'https://images.unsplash.com/photo-1643379850623-7eb6442cd262?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzZXJ1bSUyMGJvdHRsZSUyMHNraW5jYXJlfGVufDF8fHx8MTc3Mjk5NDgwMHww&ixlib=rb-4.1.0&q=80&w=1080',
       name: 'Retinol Eye Recovery Night Cream',
       brand: 'NightGlow',
-      price: '₹3,299',
+      price: '₹2,999',
       rating: 5,
       description: 'Overnight treatment with retinol to diminish dark circles',
       availability: ['Flipkart', 'Nykaa', 'Amazon'],
     },
   ];
+
+  const selectedRange =
+    Array.isArray(priceRange) && priceRange.length === 2 ? priceRange : [200, 3000];
+
+  const filteredProducts = mockProducts.filter((product) => {
+    const numericPrice = Number(product.price.replace(/[^\d]/g, ''));
+    return numericPrice >= selectedRange[0] && numericPrice <= selectedRange[1];
+  });
 
   if (!image) {
     return (
@@ -292,19 +373,30 @@ export function ResultPage() {
                 Recommended Products
               </h2>
               <p className="text-lg text-gray-600">
-                Personalized product suggestions for your skin concern
+                Showing products in your selected range: ₹{selectedRange[0]} - ₹{selectedRange[1]}
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {mockProducts.map((product, index) => (
-                <ProductCard
-                  key={index}
-                  {...product}
-                  onBuyNow={() => setSelectedProduct(product.name)}
-                />
-              ))}
-            </div>
+            {filteredProducts.length > 0 ? (
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {filteredProducts.map((product, index) => (
+                  <ProductCard
+                    key={index}
+                    {...product}
+                    onBuyNow={() => setSelectedProduct(product.name)}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="bg-white border border-gray-200 rounded-2xl p-8 text-center">
+                <p className="text-lg font-semibold text-[#2B2B2B] mb-2">
+                  No products found in this range
+                </p>
+                <p className="text-gray-600">
+                  Try increasing your maximum budget on the analysis page to see more options.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
