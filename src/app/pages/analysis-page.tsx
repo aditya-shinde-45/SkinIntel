@@ -9,6 +9,7 @@ export function AnalysisPage() {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedImageName, setSelectedImageName] = useState('');
   const [country, setCountry] = useState('');
   const [priceRange, setPriceRange] = useState([200, 2000]);
   const [isDragging, setIsDragging] = useState(false);
@@ -17,6 +18,7 @@ export function AnalysisPage() {
     const reader = new FileReader();
     reader.onload = (e) => {
       setSelectedImage(e.target?.result as string);
+      setSelectedImageName(file.name);
     };
     reader.readAsDataURL(file);
   };
@@ -44,6 +46,7 @@ export function AnalysisPage() {
       navigate('/results', {
         state: {
           image: selectedImage,
+          imageName: selectedImageName,
           country,
           priceRange,
         },

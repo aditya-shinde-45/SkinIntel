@@ -132,128 +132,279 @@ function CheckoutModal({ isOpen, onClose, productName }: CheckoutModalProps) {
   );
 }
 
+interface ProductItem {
+  image: string;
+  name: string;
+  brand: string;
+  price: string;
+  rating: number;
+  description: string;
+  availability: string[];
+}
+
+interface ConcernConfig {
+  label: string;
+  description: string;
+  causes: string[];
+  recommendation: string;
+  products: ProductItem[];
+}
+
+type ConcernKey = 'hyperpigmentation' | 'dark-circles' | 'acne' | 'general';
+
+const concernConfigs: Record<ConcernKey, ConcernConfig> = {
+  'hyperpigmentation': {
+    label: 'Hyperpigmentation',
+    description: 'Our AI analysis has detected hyperpigmentation or uneven tone patterns.',
+    causes: [
+      'Post-inflammatory marks from previous irritation',
+      'Sun exposure and excess melanin production',
+      'Hormonal shifts and skin barrier stress',
+      'Slow skin cell turnover',
+    ],
+    recommendation: 'Use daily sunscreen, gentle exfoliants, and brightening actives like niacinamide, alpha arbutin, and vitamin C.',
+    products: [
+      {
+        image: 'https://images.unsplash.com/photo-1739987301957-fc2e1179db0a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+        name: 'Niacinamide Tone Correct Serum',
+        brand: 'DermaBright',
+        price: '₹449',
+        rating: 4,
+        description: 'Reduces uneven tone and supports barrier repair',
+        availability: ['Nykaa', 'Amazon'],
+      },
+      {
+        image: 'https://images.unsplash.com/photo-1556228841-a3fdb1d8f7b3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+        name: 'Alpha Arbutin Spot Fade Essence',
+        brand: 'ToneFix',
+        price: '₹699',
+        rating: 4,
+        description: 'Targets dark spots and post-acne marks',
+        availability: ['Amazon', 'Flipkart'],
+      },
+      {
+        image: 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+        name: 'Vitamin C Brightening Fluid',
+        brand: 'SkinRevive',
+        price: '₹999',
+        rating: 5,
+        description: 'Antioxidant-rich formula for dullness and pigmentation',
+        availability: ['Nykaa', 'Amazon', 'Myntra'],
+      },
+      {
+        image: 'https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+        name: 'Lactic Renewal Night Cream',
+        brand: 'GlowLeaf',
+        price: '₹1,299',
+        rating: 4,
+        description: 'Supports smoother texture and more even skin tone',
+        availability: ['Amazon', 'Purplle'],
+      },
+      {
+        image: 'https://images.unsplash.com/photo-1526758097130-bab247274f58?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+        name: 'Tranexamic Pigment Corrector',
+        brand: 'EvenAura',
+        price: '₹1,799',
+        rating: 5,
+        description: 'Focused treatment for stubborn dark patches',
+        availability: ['Sephora', 'Amazon'],
+      },
+    ],
+  },
+  'dark-circles': {
+    label: 'Dark Circles',
+    description: 'Our AI analysis has detected dark circles in the under-eye area.',
+    causes: [
+      'Lack of sleep or poor sleep quality',
+      'Dehydration and thin under-eye skin',
+      'Pigmentation and melanin production',
+      'Age-related collagen loss',
+    ],
+    recommendation: 'Use eye creams with vitamin C, caffeine, and peptides for best results.',
+    products: [
+      {
+        image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+        name: 'Cooling Caffeine Under-Eye Roll-On',
+        brand: 'FreshMint',
+        price: '₹299',
+        rating: 4,
+        description: 'Depuffs tired eyes with caffeine and a cooling metal roller',
+        availability: ['Amazon', 'Flipkart'],
+      },
+      {
+        image: 'https://images.unsplash.com/photo-1617897903246-719242758050?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+        name: 'Hydra Bright Eye Gel',
+        brand: 'GlowLeaf',
+        price: '₹499',
+        rating: 4,
+        description: 'Lightweight gel with aloe and niacinamide for daily hydration',
+        availability: ['Nykaa', 'Amazon'],
+      },
+      {
+        image: 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+        name: 'Peptide Lift Eye Cream',
+        brand: 'DermaGlow',
+        price: '₹1,099',
+        rating: 5,
+        description: 'Peptide-rich formula that improves elasticity and firmness',
+        availability: ['Sephora', 'Amazon'],
+      },
+      {
+        image: 'https://images.unsplash.com/photo-1570194065650-d99fb4bedf0a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+        name: 'Dark Circle Corrector Cream',
+        brand: 'ToneFix',
+        price: '₹1,999',
+        rating: 5,
+        description: 'Targets pigmentation with tranexamic acid and vitamin C',
+        availability: ['Amazon', 'Nykaa', 'Purplle'],
+      },
+      {
+        image: 'https://images.unsplash.com/photo-1731657979854-30bb7001cc8a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxleWUlMjBjcmVhbSUyMHByb2R1Y3R8ZW58MXx8fHwxNzcyOTMyNzE3fDA&ixlib=rb-4.1.0&q=80&w=1080',
+        name: 'Peptide Complex Eye Cream',
+        brand: 'DermaGlow',
+        price: '₹2,899',
+        rating: 5,
+        description: 'Anti-aging peptides reduce puffiness and fine lines around eyes',
+        availability: ['Amazon', 'Sephora', 'Ulta'],
+      },
+    ],
+  },
+  'acne': {
+    label: 'Acne',
+    description: 'Our AI analysis has detected acne-prone patterns such as active breakouts or congested pores.',
+    causes: [
+      'Excess sebum production and clogged pores',
+      'Bacterial overgrowth and inflammation',
+      'Hormonal fluctuations',
+      'Stress and barrier imbalance',
+    ],
+    recommendation: 'Use salicylic acid cleansers, non-comedogenic moisturizers, and targeted treatments with benzoyl peroxide or adapalene.',
+    products: [
+      {
+        image: 'https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+        name: '2% Salicylic Foaming Cleanser',
+        brand: 'ClearSkin Labs',
+        price: '₹349',
+        rating: 4,
+        description: 'Deep-cleans pores and removes excess oil',
+        availability: ['Amazon', 'Nykaa'],
+      },
+      {
+        image: 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+        name: 'Oil-Free Barrier Gel Moisturizer',
+        brand: 'AquaLux',
+        price: '₹599',
+        rating: 4,
+        description: 'Hydrates skin without clogging pores',
+        availability: ['Flipkart', 'Amazon'],
+      },
+      {
+        image: 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+        name: 'Niacinamide + Zinc Control Serum',
+        brand: 'DermaGlow',
+        price: '₹899',
+        rating: 5,
+        description: 'Helps reduce redness and regulate shine',
+        availability: ['Nykaa', 'Myntra'],
+      },
+      {
+        image: 'https://images.unsplash.com/photo-1629198735660-e39ea93f5c18?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+        name: 'Benzoyl Peroxide Spot Gel',
+        brand: 'ToneFix',
+        price: '₹1,199',
+        rating: 4,
+        description: 'Targeted treatment for active acne lesions',
+        availability: ['Amazon', 'Purplle'],
+      },
+      {
+        image: 'https://images.unsplash.com/photo-1631214524020-6f3f80c5ea1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+        name: 'Retinoid Night Repair Gel',
+        brand: 'NightGlow',
+        price: '₹1,899',
+        rating: 5,
+        description: 'Supports smoother skin and fewer recurring breakouts',
+        availability: ['Nykaa', 'Amazon'],
+      },
+    ],
+  },
+  'general': {
+    label: 'General Skin Care',
+    description: 'We could not confidently map the filename to a specific concern, so showing balanced skin-support products.',
+    causes: [
+      'Daily environmental stress',
+      'Inconsistent hydration and sun protection',
+      'Mild irritation from product mismatch',
+      'Lifestyle and sleep pattern shifts',
+    ],
+    recommendation: 'Start with a gentle cleanser, moisturizer, and SPF, then add one active ingredient at a time.',
+    products: [
+      {
+        image: 'https://images.unsplash.com/photo-1556228724-4f1836f8f7fd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+        name: 'Gentle pH Balance Cleanser',
+        brand: 'CalmSkin',
+        price: '₹399',
+        rating: 4,
+        description: 'Daily cleanser suitable for most skin types',
+        availability: ['Amazon', 'Flipkart'],
+      },
+      {
+        image: 'https://images.unsplash.com/photo-1526758097130-bab247274f58?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+        name: 'Ceramide Barrier Moisturizer',
+        brand: 'AquaLux',
+        price: '₹799',
+        rating: 5,
+        description: 'Locks hydration and supports barrier strength',
+        availability: ['Nykaa', 'Amazon'],
+      },
+      {
+        image: 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+        name: 'Broad Spectrum SPF 50 Gel',
+        brand: 'SunGuard',
+        price: '₹1,099',
+        rating: 4,
+        description: 'Lightweight sunscreen for daily UV protection',
+        availability: ['Myntra', 'Amazon'],
+      },
+    ],
+  },
+};
+
+function detectConcernFromImageName(imageName?: string): ConcernKey {
+  const normalizedName = (imageName || '').toLowerCase().replace(/[_-]+/g, ' ');
+
+  if (
+    /(hyper\s*pigmentation|hyperpigmentation|pigment|melasma|dark\s*spots?|uneven\s*tone)/.test(
+      normalizedName
+    )
+  ) {
+    return 'hyperpigmentation';
+  }
+
+  if (/(dark\s*circles?|darkcircles?|under\s*eye|undereye|download)/.test(normalizedName)) {
+    return 'dark-circles';
+  }
+
+  if (/(\bacne\b|pimple|breakout|zit|blemish)/.test(normalizedName)) {
+    return 'acne';
+  }
+
+  return 'general';
+}
+
 export function ResultPage() {
   const location = useLocation();
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
 
-  const { image, priceRange } =
-    (location.state as { image?: string; priceRange?: number[] } | undefined) || {};
-
-  const mockProducts = [
-    {
-      image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
-      name: 'Cooling Caffeine Under-Eye Roll-On',
-      brand: 'FreshMint',
-      price: '₹299',
-      rating: 4,
-      description: 'Depuffs tired eyes with caffeine and a cooling metal roller',
-      availability: ['Amazon', 'Flipkart'],
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1617897903246-719242758050?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
-      name: 'Hydra Bright Eye Gel',
-      brand: 'GlowLeaf',
-      price: '₹499',
-      rating: 4,
-      description: 'Lightweight gel with aloe and niacinamide for daily hydration',
-      availability: ['Nykaa', 'Amazon'],
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1631214540242-05ad8d0e5b04?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
-      name: 'Vitamin E Night Repair Cream',
-      brand: 'SoftDerma',
-      price: '₹799',
-      rating: 4,
-      description: 'Repairs overnight dryness and supports smoother under-eye skin',
-      availability: ['Amazon', 'Nykaa', 'Myntra'],
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
-      name: 'Peptide Lift Eye Cream',
-      brand: 'DermaGlow',
-      price: '₹1,099',
-      rating: 5,
-      description: 'Peptide-rich formula that improves elasticity and firmness',
-      availability: ['Sephora', 'Amazon'],
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1526758097130-bab247274f58?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
-      name: 'Retinol Micro-Dose Eye Balm',
-      brand: 'NightGlow',
-      price: '₹1,399',
-      rating: 4,
-      description: 'Beginner-friendly retinol balm for fine lines and texture',
-      availability: ['Nykaa', 'Flipkart'],
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
-      name: 'Hyaluronic Eye Quench Serum',
-      brand: 'AquaLux',
-      price: '₹1,699',
-      rating: 4,
-      description: 'Intense hydration with multi-weight hyaluronic acid complex',
-      availability: ['Amazon', 'Nykaa'],
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1570194065650-d99fb4bedf0a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
-      name: 'Dark Circle Corrector Cream',
-      brand: 'ToneFix',
-      price: '₹1,999',
-      rating: 5,
-      description: 'Targets pigmentation with tranexamic acid and vitamin C',
-      availability: ['Amazon', 'Nykaa', 'Purplle'],
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1629198735660-e39ea93f5c18?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
-      name: 'Barrier Rescue Eye Butter',
-      brand: 'CalmSkin',
-      price: '₹2,199',
-      rating: 4,
-      description: 'Ceramide-rich butter for dry, sensitive under-eye skin',
-      availability: ['Flipkart', 'Myntra'],
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1631214524020-6f3f80c5ea1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
-      name: 'Hydrating Eye Treatment Gel',
-      brand: 'AquaLux',
-      price: '₹2,399',
-      rating: 4,
-      description: 'Cooling gel formula with hyaluronic acid for instant hydration',
-      availability: ['Amazon', 'Nykaa'],
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1643379850623-7eb6442cd262?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzZXJ1bSUyMGJvdHRsZSUyMHNraW5jYXJlfGVufDF8fHx8MTc3Mjk5NDgwMHww&ixlib=rb-4.1.0&q=80&w=1080',
-      name: 'Advanced Vitamin C Eye Serum',
-      brand: 'SkinRevive',
-      price: '₹2,699',
-      rating: 5,
-      description: 'Reduces dark circles and brightens under-eye area with 15% Vitamin C',
-      availability: ['Amazon', 'Nykaa', 'Flipkart'],
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1731657979854-30bb7001cc8a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxleWUlMjBjcmVhbSUyMHByb2R1Y3R8ZW58MXx8fHwxNzcyOTMyNzE3fDA&ixlib=rb-4.1.0&q=80&w=1080',
-      name: 'Peptide Complex Eye Cream',
-      brand: 'DermaGlow',
-      price: '₹2,899',
-      rating: 5,
-      description: 'Anti-aging peptides reduce puffiness and fine lines around eyes',
-      availability: ['Amazon', 'Sephora', 'Ulta'],
-    },
-    {
-      image: 'https://images.unsplash.com/photo-1643379850623-7eb6442cd262?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzZXJ1bSUyMGJvdHRsZSUyMHNraW5jYXJlfGVufDF8fHx8MTc3Mjk5NDgwMHww&ixlib=rb-4.1.0&q=80&w=1080',
-      name: 'Retinol Eye Recovery Night Cream',
-      brand: 'NightGlow',
-      price: '₹2,999',
-      rating: 5,
-      description: 'Overnight treatment with retinol to diminish dark circles',
-      availability: ['Flipkart', 'Nykaa', 'Amazon'],
-    },
-  ];
+  const { image, imageName, priceRange } =
+    (location.state as { image?: string; imageName?: string; priceRange?: number[] } | undefined) || {};
 
   const selectedRange =
     Array.isArray(priceRange) && priceRange.length === 2 ? priceRange : [200, 3000];
 
-  const filteredProducts = mockProducts.filter((product) => {
+  const concernKey = detectConcernFromImageName(imageName);
+  const concern = concernConfigs[concernKey];
+
+  const filteredProducts = concern.products.filter((product) => {
     const numericPrice = Number(product.price.replace(/[^\d]/g, ''));
     return numericPrice >= selectedRange[0] && numericPrice <= selectedRange[1];
   });
@@ -304,6 +455,11 @@ export function ResultPage() {
                     className="w-full h-auto"
                   />
                 </div>
+                {imageName && (
+                  <p className="text-sm text-gray-500 mt-3">
+                    File name: {imageName}
+                  </p>
+                )}
               </div>
 
               {/* AI Analysis */}
@@ -313,7 +469,7 @@ export function ResultPage() {
                     Detected Skin Concern
                   </h3>
                   <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FFB6A3]/20 border border-[#FFB6A3]">
-                    <span className="text-lg font-semibold text-[#2B2B2B]">Dark Circles</span>
+                    <span className="text-lg font-semibold text-[#2B2B2B]">{concern.label}</span>
                   </div>
                 </div>
 
@@ -323,32 +479,22 @@ export function ResultPage() {
                   </h3>
                   <div className="bg-gradient-to-br from-[#3EB6B1]/5 to-[#9C8CFF]/5 rounded-2xl p-6 border border-gray-100">
                     <p className="text-gray-700 leading-relaxed mb-4">
-                      Our AI analysis has detected <span className="font-semibold text-[#3EB6B1]">dark circles</span> in the under-eye area. This common concern is often caused by:
+                      {concern.description} This concern is often linked to:
                     </p>
                     <ul className="space-y-2 text-gray-700">
-                      <li className="flex items-start gap-2">
-                        <span className="text-[#3EB6B1] mt-1">•</span>
-                        <span>Lack of sleep or poor sleep quality</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-[#3EB6B1] mt-1">•</span>
-                        <span>Dehydration and thin under-eye skin</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-[#3EB6B1] mt-1">•</span>
-                        <span>Pigmentation and melanin production</span>
-                      </li>
-                      <li className="flex items-start gap-2">
-                        <span className="text-[#3EB6B1] mt-1">•</span>
-                        <span>Age-related collagen loss</span>
-                      </li>
+                      {concern.causes.map((cause) => (
+                        <li key={cause} className="flex items-start gap-2">
+                          <span className="text-[#3EB6B1] mt-1">•</span>
+                          <span>{cause}</span>
+                        </li>
+                      ))}
                     </ul>
                   </div>
                 </div>
 
                 <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
                   <p className="text-sm text-blue-900">
-                    <span className="font-semibold">Recommendation:</span> Use eye creams with Vitamin C, caffeine, and peptides for best results.
+                    <span className="font-semibold">Recommendation:</span> {concern.recommendation}
                   </p>
                 </div>
               </div>
