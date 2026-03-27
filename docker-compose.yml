@@ -1,0 +1,28 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: skinintel-backend
+    environment:
+      MODEL_PATH: ${MODEL_PATH:-models/model.keras}
+      MODEL_VERSION: ${MODEL_VERSION:-1.0.0}
+      PRODUCTS_CSV_PATH: ${PRODUCTS_CSV_PATH:-data/products.csv}
+      PORT: ${PORT:-5000}
+      ENV: ${ENV:-dev}
+      ALLOWED_ORIGIN: ${ALLOWED_ORIGIN:-*}
+      MAX_IMAGE_SIZE_MB: ${MAX_IMAGE_SIZE_MB:-10}
+      RATE_LIMIT_PER_MINUTE: ${RATE_LIMIT_PER_MINUTE:-30}
+      CONFIDENCE_THRESHOLD: ${CONFIDENCE_THRESHOLD:-0.40}
+    ports:
+      - "5000:5000"
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: skinintel-frontend
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
