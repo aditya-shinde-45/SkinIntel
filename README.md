@@ -1,45 +1,46 @@
+# SkinIntel — AI-Powered Skin Analysis
 
-# SkinIntel
+```
+SkinIntel/
+  backend/          Python Flask API + CNN model + DynamoDB auth
+    app/            Flask application (controllers, services, ml, data)
+    ml/             Training scripts (train.py, evaluate.py)
+    models/         Trained model weights (model.keras)
+    data/           Product dataset CSV
+    tests/          Unit and property tests
+    run.py          Server entry point
+    requirements.txt
+    Dockerfile
+    .env
 
-## Local frontend development
+  frontend/         React + TypeScript + Vite
+    src/            Application source
+    index.html
+    package.json
+    vite.config.ts
+    Dockerfile
+    .env
 
-Run `npm i` to install dependencies.
+  docker-compose.yml   Runs both services together
+```
 
-Run `npm run dev` to start the Vite app.
+## Quick Start
 
-## Dockerized setup
+### Backend
+```bash
+cd backend
+pip install -r requirements.txt
+python run.py
+```
 
-This repository includes complete Docker support for frontend and backend.
+### Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-### Services
-
-- `frontend` (Vite build served by Nginx) on `http://localhost:5173`
-- `backend` (Flask via Gunicorn) on `http://localhost:5000`
-
-### Run with Docker Compose
-
-1. Optional: copy `.env.example` to `.env` and customize values.
-2. Build and start all services:
-
-If your machine supports Docker Compose plugin:
-
-docker compose up --build
-
-If your machine uses standalone Docker Compose:
-
+### Docker (both together)
+```bash
 docker-compose up --build
-
-### Useful checks
-
-- Backend health check: `http://localhost:5000/health`
-
-### Stop services
-
-Plugin variant:
-
-docker compose down
-
-Standalone variant:
-
-docker-compose down
-  
+```
