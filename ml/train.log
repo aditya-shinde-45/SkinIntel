@@ -1,0 +1,24 @@
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1774617714.649864   12175 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+I0000 00:00:1774617714.680877   12175 cpu_feature_guard.cc:227] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 AVX_VNNI FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1774617715.329036   12175 port.cc:153] oneDNN custom operations are on. You may see slightly different numerical results due to floating-point round-off errors from different computation orders. To turn them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+E0000 00:00:1774617715.654714   12175 cuda_platform.cc:52] failed call to cuInit: INTERNAL: CUDA error: Failed call to cuInit: CUDA_ERROR_NO_DEVICE: no CUDA-capable device is detected
+TensorFlow 2.21.0
+Dataset: /home/ideabliss/Downloads/archive/skin_type_classification_dataset
+Output:  models/model.keras
+Found 0 images belonging to 8 classes.
+Found 0 images belonging to 8 classes.
+
+=== Phase 1: Training classification head (backbone frozen) ===
+Traceback (most recent call last):
+  File "/home/ideabliss/SkinIntel/ml/train.py", line 152, in <module>
+    train()
+  File "/home/ideabliss/SkinIntel/ml/train.py", line 109, in train
+    model.fit(
+  File "/home/ideabliss/.local/lib/python3.12/site-packages/keras/src/utils/traceback_utils.py", line 122, in error_handler
+    raise e.with_traceback(filtered_tb) from None
+  File "/home/ideabliss/.local/lib/python3.12/site-packages/keras/src/trainers/data_adapters/py_dataset_adapter.py", line 311, in get_tf_dataset
+    raise ValueError("The PyDataset has length 0")
+ValueError: The PyDataset has length 0

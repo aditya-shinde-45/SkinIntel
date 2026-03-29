@@ -26,6 +26,7 @@ class Product:
     concern_tags: list  # list[str]
     available_countries: list  # list[str]
     links: ProductLinks = field(default_factory=ProductLinks)
+    image_url: Optional[str] = None
 
 
 @dataclass

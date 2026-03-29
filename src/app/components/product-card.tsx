@@ -9,6 +9,7 @@ interface ProductCardProps {
   rating: number;
   description: string;
   availability: string[];
+  links?: { amazon?: string | null; nykaa?: string | null; flipkart?: string | null };
   onBuyNow: () => void;
 }
 
@@ -20,6 +21,7 @@ export function ProductCard({
   rating,
   description,
   availability,
+  links,
   onBuyNow,
 }: ProductCardProps) {
   return (
@@ -80,7 +82,9 @@ export function ProductCard({
             {availability.map((store) => (
               <a
                 key={store}
-                href="#"
+                href={links?.[store.toLowerCase() as keyof typeof links] || '#'}
+                target={links?.[store.toLowerCase() as keyof typeof links] ? '_blank' : undefined}
+                rel="noopener noreferrer"
                 className="text-xs px-3 py-1 rounded-full bg-gray-100 text-gray-700 hover:bg-[#3EB6B1] hover:text-white transition-colors"
               >
                 {store}

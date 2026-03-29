@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router';
 import { Navbar } from '../components/navbar';
 import { Footer } from '../components/footer';
 import { Button } from '../components/button';
-import { Upload, Sparkles } from 'lucide-react';
+import { Upload, Sparkles, Loader2 } from 'lucide-react';
+
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export function AnalysisPage() {
   const navigate = useNavigate();
@@ -13,6 +15,9 @@ export function AnalysisPage() {
   const [country, setCountry] = useState('');
   const [priceRange, setPriceRange] = useState([200, 2000]);
   const [isDragging, setIsDragging] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const handleFileSelect = (file: File) => {
     const reader = new FileReader();
@@ -21,6 +26,8 @@ export function AnalysisPage() {
       setSelectedImageName(file.name);
     };
     reader.readAsDataURL(file);
+    setSelectedFile(file);
+    setError(null);
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -41,16 +48,46 @@ export function AnalysisPage() {
     }
   };
 
-  const handleAnalyze = () => {
-    if (selectedImage && country) {
+  const handleAnalyze = async () => {
+    if (!selectedFile || !country) return;
+
+    setIsAnalyzing(true);
+    setError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('image', selectedFile);
+      formData.append('country', country);
+      formData.append('min_price', String(priceRange[0]));
+      formData.append('max_price', String(priceRange[1]));
+      formData.append('limit', '10');
+
+      const res = await fetch(`${API_BASE}/api/v1/analyze`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      const json = await res.json();
+
+      if (!json.success) {
+        setError(json.error?.message || 'Analysis failed. Please try again.');
+        return;
+      }
+
       navigate('/results', {
         state: {
           image: selectedImage,
           imageName: selectedImageName,
           country,
           priceRange,
+          apiResult: json.data,
+          apiMeta: json.meta,
         },
       });
+    } catch (err) {
+      setError('Could not reach the analysis server. Please check your connection.');
+    } finally {
+      setIsAnalyzing(false);
     }
   };
 
@@ -244,15 +281,28 @@ export function AnalysisPage() {
             <div className="pt-4">
               <Button
                 onClick={handleAnalyze}
-                disabled={!selectedImage || !country}
+                disabled={!selectedImage || !country || isAnalyzing}
                 size="lg"
                 className="w-full"
               >
-                <Sparkles className="w-5 h-5" />
-                Analyze My Skin
+                {isAnalyzing ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Analyzing...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-5 h-5" />
+                    Analyze My Skin
+                  </>
+                )}
               </Button>
 
-              {(!selectedImage || !country) && (
+              {error && (
+                <p className="text-center text-sm text-red-500 mt-3">{error}</p>
+              )}
+
+              {(!selectedImage || !country) && !error && (
                 <p className="text-center text-sm text-gray-500 mt-3">
                   Please upload an image and select your country to continue
                 </p>

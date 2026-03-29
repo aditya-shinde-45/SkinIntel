@@ -140,6 +140,21 @@ interface ProductItem {
   rating: number;
   description: string;
   availability: string[];
+  links?: { amazon?: string | null; nykaa?: string | null; flipkart?: string | null };
+}
+
+interface ApiProduct {
+  product_id: string;
+  name: string;
+  brand: string;
+  price: number;
+  currency: string;
+  rating: number;
+  description: string;
+  concern_tags: string[];
+  available_countries: string[];
+  image_url?: string;
+  links: { amazon?: string | null; nykaa?: string | null; flipkart?: string | null };
 }
 
 interface ConcernConfig {
@@ -150,264 +165,192 @@ interface ConcernConfig {
   products: ProductItem[];
 }
 
-type ConcernKey = 'hyperpigmentation' | 'dark-circles' | 'acne' | 'general';
+type ConcernKey = 'oily' | 'dry' | 'normal' | 'combination' | 'general';
 
 const concernConfigs: Record<ConcernKey, ConcernConfig> = {
-  'hyperpigmentation': {
-    label: 'Hyperpigmentation',
-    description: 'Our AI analysis has detected hyperpigmentation or uneven tone patterns.',
+  'oily': {
+    label: 'Oily Skin',
+    description: 'Our AI has detected oily skin — characterized by excess sebum, shine, and enlarged pores.',
     causes: [
-      'Post-inflammatory marks from previous irritation',
-      'Sun exposure and excess melanin production',
-      'Hormonal shifts and skin barrier stress',
-      'Slow skin cell turnover',
+      'Overactive sebaceous glands producing excess sebum',
+      'Hormonal fluctuations and genetic predisposition',
+      'Humidity, heat, and environmental triggers',
+      'Over-cleansing that strips the skin and triggers rebound oil',
     ],
-    recommendation: 'Use daily sunscreen, gentle exfoliants, and brightening actives like niacinamide, alpha arbutin, and vitamin C.',
+    recommendation: 'Use a gentle foaming cleanser, lightweight non-comedogenic moisturizer, and niacinamide or BHA to regulate oil.',
     products: [
-      {
-        image: 'https://images.unsplash.com/photo-1739987301957-fc2e1179db0a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
-        name: 'Niacinamide Tone Correct Serum',
-        brand: 'DermaBright',
-        price: '₹449',
-        rating: 4,
-        description: 'Reduces uneven tone and supports barrier repair',
-        availability: ['Nykaa', 'Amazon'],
-      },
-      {
-        image: 'https://images.unsplash.com/photo-1556228841-a3fdb1d8f7b3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
-        name: 'Alpha Arbutin Spot Fade Essence',
-        brand: 'ToneFix',
-        price: '₹699',
-        rating: 4,
-        description: 'Targets dark spots and post-acne marks',
-        availability: ['Amazon', 'Flipkart'],
-      },
-      {
-        image: 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
-        name: 'Vitamin C Brightening Fluid',
-        brand: 'SkinRevive',
-        price: '₹999',
-        rating: 5,
-        description: 'Antioxidant-rich formula for dullness and pigmentation',
-        availability: ['Nykaa', 'Amazon', 'Myntra'],
-      },
-      {
-        image: 'https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
-        name: 'Lactic Renewal Night Cream',
-        brand: 'GlowLeaf',
-        price: '₹1,299',
-        rating: 4,
-        description: 'Supports smoother texture and more even skin tone',
-        availability: ['Amazon', 'Purplle'],
-      },
-      {
-        image: 'https://images.unsplash.com/photo-1526758097130-bab247274f58?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
-        name: 'Tranexamic Pigment Corrector',
-        brand: 'EvenAura',
-        price: '₹1,799',
-        rating: 5,
-        description: 'Focused treatment for stubborn dark patches',
-        availability: ['Sephora', 'Amazon'],
-      },
+      { image: 'https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?w=400', name: 'Mattifying Oil-Control Gel Cleanser', brand: 'ClearSkin Labs', price: '₹449', rating: 5, description: 'Removes excess oil without stripping the skin barrier.', availability: ['Amazon', 'Nykaa'] },
+      { image: 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=400', name: 'Niacinamide 10% + Zinc Serum', brand: 'DermaGlow', price: '₹699', rating: 5, description: 'Regulates sebum and minimizes pore appearance.', availability: ['Nykaa', 'Amazon'] },
+      { image: 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=400', name: 'Oil-Free Lightweight Moisturizer', brand: 'AquaLux', price: '₹599', rating: 4, description: 'Hydrates oily skin without adding greasiness.', availability: ['Flipkart', 'Amazon'] },
+      { image: 'https://images.unsplash.com/photo-1629198735660-e39ea93f5c18?w=400', name: 'Clay Detox Pore Mask', brand: 'PureClay', price: '₹699', rating: 4, description: 'Draws out impurities and minimizes pore appearance.', availability: ['Amazon', 'Nykaa'] },
     ],
   },
-  'dark-circles': {
-    label: 'Dark Circles',
-    description: 'Our AI analysis has detected dark circles in the under-eye area.',
+  'dry': {
+    label: 'Dry Skin',
+    description: 'Our AI has detected dry skin — characterized by tightness, flakiness, and reduced sebum production.',
     causes: [
-      'Lack of sleep or poor sleep quality',
-      'Dehydration and thin under-eye skin',
-      'Pigmentation and melanin production',
-      'Age-related collagen loss',
+      'Insufficient sebum production from sebaceous glands',
+      'Cold weather, low humidity, and hot showers',
+      'Harsh cleansers that disrupt the skin barrier',
+      'Aging and reduced natural moisturizing factors',
     ],
-    recommendation: 'Use eye creams with vitamin C, caffeine, and peptides for best results.',
+    recommendation: 'Use a creamy cleanser, ceramide-rich moisturizer, and hyaluronic acid serum. Avoid hot water and alcohol-based products.',
     products: [
-      {
-        image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
-        name: 'Cooling Caffeine Under-Eye Roll-On',
-        brand: 'FreshMint',
-        price: '₹299',
-        rating: 4,
-        description: 'Depuffs tired eyes with caffeine and a cooling metal roller',
-        availability: ['Amazon', 'Flipkart'],
-      },
-      {
-        image: 'https://images.unsplash.com/photo-1617897903246-719242758050?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
-        name: 'Hydra Bright Eye Gel',
-        brand: 'GlowLeaf',
-        price: '₹499',
-        rating: 4,
-        description: 'Lightweight gel with aloe and niacinamide for daily hydration',
-        availability: ['Nykaa', 'Amazon'],
-      },
-      {
-        image: 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
-        name: 'Peptide Lift Eye Cream',
-        brand: 'DermaGlow',
-        price: '₹1,099',
-        rating: 5,
-        description: 'Peptide-rich formula that improves elasticity and firmness',
-        availability: ['Sephora', 'Amazon'],
-      },
-      {
-        image: 'https://images.unsplash.com/photo-1570194065650-d99fb4bedf0a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
-        name: 'Dark Circle Corrector Cream',
-        brand: 'ToneFix',
-        price: '₹1,999',
-        rating: 5,
-        description: 'Targets pigmentation with tranexamic acid and vitamin C',
-        availability: ['Amazon', 'Nykaa', 'Purplle'],
-      },
-      {
-        image: 'https://images.unsplash.com/photo-1731657979854-30bb7001cc8a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxleWUlMjBjcmVhbSUyMHByb2R1Y3R8ZW58MXx8fHwxNzcyOTMyNzE3fDA&ixlib=rb-4.1.0&q=80&w=1080',
-        name: 'Peptide Complex Eye Cream',
-        brand: 'DermaGlow',
-        price: '₹2,899',
-        rating: 5,
-        description: 'Anti-aging peptides reduce puffiness and fine lines around eyes',
-        availability: ['Amazon', 'Sephora', 'Ulta'],
-      },
+      { image: 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=400', name: 'Ceramide Barrier Repair Moisturizer', brand: 'AquaLux', price: '₹799', rating: 5, description: 'Locks in hydration and restores the skin barrier.', availability: ['Nykaa', 'Amazon'] },
+      { image: 'https://images.unsplash.com/photo-1617897903246-719242758050?w=400', name: 'Hyaluronic Acid Deep Hydration Serum', brand: 'GlowLeaf', price: '₹649', rating: 5, description: 'Multi-weight HA for deep and surface hydration.', availability: ['Amazon', 'Flipkart'] },
+      { image: 'https://images.unsplash.com/photo-1570194065650-d99fb4bedf0a?w=400', name: 'Rich Shea Butter Night Cream', brand: 'NightGlow', price: '₹1,199', rating: 4, description: 'Intensely nourishes dry skin overnight.', availability: ['Amazon', 'Nykaa'] },
+      { image: 'https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?w=400', name: 'Oat Milk Gentle Cream Cleanser', brand: 'CalmSkin', price: '₹499', rating: 4, description: 'Creamy cleanser that soothes and hydrates dry skin.', availability: ['Nykaa', 'Flipkart'] },
     ],
   },
-  'acne': {
-    label: 'Acne',
-    description: 'Our AI analysis has detected acne-prone patterns such as active breakouts or congested pores.',
+  'normal': {
+    label: 'Normal Skin',
+    description: 'Our AI has detected normal skin — well-balanced, with small pores and minimal imperfections.',
     causes: [
-      'Excess sebum production and clogged pores',
-      'Bacterial overgrowth and inflammation',
-      'Hormonal fluctuations',
-      'Stress and barrier imbalance',
+      'Balanced sebum production and good skin barrier function',
+      'Consistent hydration and healthy lifestyle habits',
+      'Minimal sensitivity to environmental stressors',
+      'Good genetics and skin microbiome balance',
     ],
-    recommendation: 'Use salicylic acid cleansers, non-comedogenic moisturizers, and targeted treatments with benzoyl peroxide or adapalene.',
+    recommendation: 'Maintain your skin with a gentle cleanser, daily SPF, and a vitamin C serum to preserve your natural balance.',
     products: [
-      {
-        image: 'https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
-        name: '2% Salicylic Foaming Cleanser',
-        brand: 'ClearSkin Labs',
-        price: '₹349',
-        rating: 4,
-        description: 'Deep-cleans pores and removes excess oil',
-        availability: ['Amazon', 'Nykaa'],
-      },
-      {
-        image: 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
-        name: 'Oil-Free Barrier Gel Moisturizer',
-        brand: 'AquaLux',
-        price: '₹599',
-        rating: 4,
-        description: 'Hydrates skin without clogging pores',
-        availability: ['Flipkart', 'Amazon'],
-      },
-      {
-        image: 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
-        name: 'Niacinamide + Zinc Control Serum',
-        brand: 'DermaGlow',
-        price: '₹899',
-        rating: 5,
-        description: 'Helps reduce redness and regulate shine',
-        availability: ['Nykaa', 'Myntra'],
-      },
-      {
-        image: 'https://images.unsplash.com/photo-1629198735660-e39ea93f5c18?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
-        name: 'Benzoyl Peroxide Spot Gel',
-        brand: 'ToneFix',
-        price: '₹1,199',
-        rating: 4,
-        description: 'Targeted treatment for active acne lesions',
-        availability: ['Amazon', 'Purplle'],
-      },
-      {
-        image: 'https://images.unsplash.com/photo-1631214524020-6f3f80c5ea1d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
-        name: 'Retinoid Night Repair Gel',
-        brand: 'NightGlow',
-        price: '₹1,899',
-        rating: 5,
-        description: 'Supports smoother skin and fewer recurring breakouts',
-        availability: ['Nykaa', 'Amazon'],
-      },
+      { image: 'https://images.unsplash.com/photo-1556228724-4f1836f8f7fd?w=400', name: 'Gentle pH-Balanced Cleanser', brand: 'CalmSkin', price: '₹399', rating: 4, description: 'Daily cleanser suitable for all skin types.', availability: ['Amazon', 'Flipkart'] },
+      { image: 'https://images.unsplash.com/photo-1526758097130-bab247274f58?w=400', name: 'Broad Spectrum SPF 50 Gel', brand: 'SunGuard', price: '₹1,099', rating: 5, description: 'Lightweight sunscreen for daily UV protection.', availability: ['Nykaa', 'Amazon'] },
+      { image: 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=400', name: 'Vitamin C Brightening Serum', brand: 'SkinRevive', price: '₹1,299', rating: 5, description: 'Antioxidant serum for radiance and even skin tone.', availability: ['Amazon', 'Nykaa'] },
+      { image: 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=400', name: 'Daily Hydration Moisturizer', brand: 'AquaLux', price: '₹699', rating: 4, description: 'Balanced moisturizer for normal skin maintenance.', availability: ['Flipkart', 'Amazon'] },
+    ],
+  },
+  'combination': {
+    label: 'Combination Skin',
+    description: 'Our AI has detected combination skin — oily T-zone (forehead, nose, chin) with normal or dry cheeks.',
+    causes: [
+      'Uneven sebaceous gland activity across facial zones',
+      'Hormonal influences and genetic factors',
+      'Using products too heavy or too stripping for mixed zones',
+      'Climate changes that affect different skin zones differently',
+    ],
+    recommendation: 'Use a balancing gel cleanser, lightweight moisturizer, and apply clay masks only to the T-zone.',
+    products: [
+      { image: 'https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?w=400', name: 'Balancing Gel Cleanser', brand: 'ClearSkin Labs', price: '₹449', rating: 5, description: 'Cleanses oily zones without drying out normal areas.', availability: ['Amazon', 'Nykaa'] },
+      { image: 'https://images.unsplash.com/photo-1617897903246-719242758050?w=400', name: 'Dual-Zone Hydrating Serum', brand: 'AquaLux', price: '₹899', rating: 4, description: 'Hydrates dry areas without adding shine to oily zones.', availability: ['Nykaa', 'Amazon'] },
+      { image: 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=400', name: 'Niacinamide 5% Balance Serum', brand: 'SkinRevive', price: '₹799', rating: 5, description: 'Balances oil production across combination skin zones.', availability: ['Amazon', 'Flipkart'] },
+      { image: 'https://images.unsplash.com/photo-1629198735660-e39ea93f5c18?w=400', name: 'Multi-Zone Clay Mask', brand: 'PureClay', price: '₹799', rating: 4, description: 'Apply to T-zone only to absorb oil without over-drying cheeks.', availability: ['Nykaa', 'Amazon'] },
     ],
   },
   'general': {
     label: 'General Skin Care',
-    description: 'We could not confidently map the filename to a specific concern, so showing balanced skin-support products.',
+    description: 'Showing balanced skin-support products suitable for all skin types.',
     causes: [
-      'Daily environmental stress',
+      'Daily environmental stress and pollution',
       'Inconsistent hydration and sun protection',
       'Mild irritation from product mismatch',
       'Lifestyle and sleep pattern shifts',
     ],
     recommendation: 'Start with a gentle cleanser, moisturizer, and SPF, then add one active ingredient at a time.',
     products: [
-      {
-        image: 'https://images.unsplash.com/photo-1556228724-4f1836f8f7fd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
-        name: 'Gentle pH Balance Cleanser',
-        brand: 'CalmSkin',
-        price: '₹399',
-        rating: 4,
-        description: 'Daily cleanser suitable for most skin types',
-        availability: ['Amazon', 'Flipkart'],
-      },
-      {
-        image: 'https://images.unsplash.com/photo-1526758097130-bab247274f58?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
-        name: 'Ceramide Barrier Moisturizer',
-        brand: 'AquaLux',
-        price: '₹799',
-        rating: 5,
-        description: 'Locks hydration and supports barrier strength',
-        availability: ['Nykaa', 'Amazon'],
-      },
-      {
-        image: 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
-        name: 'Broad Spectrum SPF 50 Gel',
-        brand: 'SunGuard',
-        price: '₹1,099',
-        rating: 4,
-        description: 'Lightweight sunscreen for daily UV protection',
-        availability: ['Myntra', 'Amazon'],
-      },
+      { image: 'https://images.unsplash.com/photo-1556228724-4f1836f8f7fd?w=400', name: 'Gentle pH Balance Cleanser', brand: 'CalmSkin', price: '₹399', rating: 4, description: 'Daily cleanser suitable for most skin types.', availability: ['Amazon', 'Flipkart'] },
+      { image: 'https://images.unsplash.com/photo-1526758097130-bab247274f58?w=400', name: 'Ceramide Barrier Moisturizer', brand: 'AquaLux', price: '₹799', rating: 5, description: 'Locks hydration and supports barrier strength.', availability: ['Nykaa', 'Amazon'] },
+      { image: 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=400', name: 'Broad Spectrum SPF 50 Gel', brand: 'SunGuard', price: '₹1,099', rating: 4, description: 'Lightweight sunscreen for daily UV protection.', availability: ['Myntra', 'Amazon'] },
     ],
   },
 };
 
 function detectConcernFromImageName(imageName?: string): ConcernKey {
-  const normalizedName = (imageName || '').toLowerCase().replace(/[_-]+/g, ' ');
-
-  if (
-    /(hyper\s*pigmentation|hyperpigmentation|pigment|melasma|dark\s*spots?|uneven\s*tone)/.test(
-      normalizedName
-    )
-  ) {
-    return 'hyperpigmentation';
-  }
-
-  if (/(dark\s*circles?|darkcircles?|under\s*eye|undereye|download)/.test(normalizedName)) {
-    return 'dark-circles';
-  }
-
-  if (/(\bacne\b|pimple|breakout|zit|blemish)/.test(normalizedName)) {
-    return 'acne';
-  }
-
+  const name = (imageName || '').toLowerCase().replace(/[_\-\s]+/g, ' ');
+  if (/\boily\b/.test(name)) return 'oily';
+  if (/\bdry\b/.test(name)) return 'dry';
+  if (/\bnormal\b/.test(name)) return 'normal';
+  if (/\bcombination\b/.test(name)) return 'combination';
   return 'general';
+}
+
+function apiProductToItem(p: ApiProduct): ProductItem {
+  return {
+    image: p.image_url || 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=400',
+    name: p.name,
+    brand: p.brand,
+    price: `₹${p.price}`,
+    rating: Math.round(p.rating),
+    description: p.description,
+    availability: [
+      p.links.amazon ? 'Amazon' : null,
+      p.links.nykaa ? 'Nykaa' : null,
+      p.links.flipkart ? 'Flipkart' : null,
+    ].filter(Boolean) as string[],
+    links: p.links,
+  };
 }
 
 export function ResultPage() {
   const location = useLocation();
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
 
-  const { image, imageName, priceRange } =
-    (location.state as { image?: string; imageName?: string; priceRange?: number[] } | undefined) || {};
+  const { image, imageName, priceRange, apiResult, apiMeta } =
+    (location.state as {
+      image?: string;
+      imageName?: string;
+      priceRange?: number[];
+      apiResult?: {
+        skin_type: string;
+        concern_label: string;
+        confidence: number;
+        low_confidence: boolean;
+        explanation: string;
+        no_results: boolean;
+        products: ApiProduct[];
+        conditions: { condition: string; confidence: number; concern_tag: string }[];
+        products_by_concern: Record<string, { products: ApiProduct[]; total_count: number }>;
+      };
+      apiMeta?: {
+        model_version?: string;
+        inference_time_ms?: number;
+        total_count?: number;
+        conditions_detected?: number;
+      };
+    } | undefined) || {};
 
   const selectedRange =
     Array.isArray(priceRange) && priceRange.length === 2 ? priceRange : [200, 3000];
 
-  const concernKey = detectConcernFromImageName(imageName);
-  const concern = concernConfigs[concernKey];
+  const usingRealData = !!apiResult;
 
-  const filteredProducts = concern.products.filter((product) => {
-    const numericPrice = Number(product.price.replace(/[^\d]/g, ''));
-    return numericPrice >= selectedRange[0] && numericPrice <= selectedRange[1];
-  });
+  // Skin type label (from trained model)
+  const skinType = usingRealData ? (apiResult!.skin_type || apiResult!.concern_label) : null;
+
+  const concernKey: ConcernKey = usingRealData
+    ? (skinType as ConcernKey) in concernConfigs
+      ? (skinType as ConcernKey)
+      : 'general'
+    : detectConcernFromImageName(imageName);
+
+  const concern = concernConfigs[concernKey] || concernConfigs['general'];
+
+  // Primary skin type products
+  const displayProducts: ProductItem[] = usingRealData
+    ? apiResult!.products.map(apiProductToItem)
+    : concern.products.filter((p) => {
+        const n = Number(p.price.replace(/[^\d]/g, ''));
+        return n >= selectedRange[0] && n <= selectedRange[1];
+      });
+
+  // Condition-specific product sections (from pretrained model)
+  const conditionSections: { label: string; condition: string; confidence: number; products: ProductItem[] }[] =
+    usingRealData && apiResult!.conditions?.length > 0
+      ? apiResult!.conditions
+          .filter((c) => apiResult!.products_by_concern?.[c.concern_tag]?.products?.length > 0)
+          .map((c) => ({
+            label: c.condition.replace(/_/g, ' ').replace(/\b\w/g, (ch) => ch.toUpperCase()),
+            condition: c.condition,
+            confidence: c.confidence,
+            products: (apiResult!.products_by_concern[c.concern_tag]?.products || []).map(apiProductToItem),
+          }))
+      : [];
+
+  const aiExplanation = usingRealData ? apiResult!.explanation : concern.description;
+  const detectedLabel = usingRealData
+    ? (skinType || '').replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+    : concern.label;
+  const confidence = usingRealData ? apiResult!.confidence : null;
+  const lowConfidence = usingRealData ? apiResult!.low_confidence : false;
 
   if (!image) {
     return (
@@ -469,8 +412,18 @@ export function ResultPage() {
                     Detected Skin Concern
                   </h3>
                   <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FFB6A3]/20 border border-[#FFB6A3]">
-                    <span className="text-lg font-semibold text-[#2B2B2B]">{concern.label}</span>
+                    <span className="text-lg font-semibold text-[#2B2B2B]">{detectedLabel}</span>
+                    {confidence !== null && (
+                      <span className="text-sm text-gray-500 ml-1">
+                        ({(confidence * 100).toFixed(1)}% confidence)
+                      </span>
+                    )}
                   </div>
+                  {lowConfidence && (
+                    <p className="text-xs text-amber-600 mt-2">
+                      ⚠️ Low confidence — showing general skincare recommendations.
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -479,24 +432,59 @@ export function ResultPage() {
                   </h3>
                   <div className="bg-gradient-to-br from-[#3EB6B1]/5 to-[#9C8CFF]/5 rounded-2xl p-6 border border-gray-100">
                     <p className="text-gray-700 leading-relaxed mb-4">
-                      {concern.description} This concern is often linked to:
+                      {aiExplanation}
                     </p>
-                    <ul className="space-y-2 text-gray-700">
-                      {concern.causes.map((cause) => (
-                        <li key={cause} className="flex items-start gap-2">
-                          <span className="text-[#3EB6B1] mt-1">•</span>
-                          <span>{cause}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    {!usingRealData && (
+                      <ul className="space-y-2 text-gray-700">
+                        {concern.causes.map((cause) => (
+                          <li key={cause} className="flex items-start gap-2">
+                            <span className="text-[#3EB6B1] mt-1">•</span>
+                            <span>{cause}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                 </div>
 
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-                  <p className="text-sm text-blue-900">
-                    <span className="font-semibold">Recommendation:</span> {concern.recommendation}
-                  </p>
-                </div>
+                {!usingRealData && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                    <p className="text-sm text-blue-900">
+                      <span className="font-semibold">Recommendation:</span> {concern.recommendation}
+                    </p>
+                  </div>
+                )}
+
+                {usingRealData && apiMeta && (
+                  <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-xs text-gray-500 space-y-1">
+                    <p>Model version: {apiMeta.model_version}</p>
+                    <p>Inference time: {apiMeta.inference_time_ms?.toFixed(1)} ms</p>
+                    <p>Total products found: {apiMeta.total_count}</p>
+                    {apiMeta.conditions_detected !== undefined && (
+                      <p>Additional conditions detected: {apiMeta.conditions_detected}</p>
+                    )}
+                  </div>
+                )}
+
+                {/* Detected conditions badges */}
+                {usingRealData && apiResult!.conditions?.length > 0 && (
+                  <div>
+                    <h3 className="font-semibold text-sm text-[#2B2B2B] mb-2">
+                      Also detected:
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {apiResult!.conditions.map((c) => (
+                        <span
+                          key={c.condition}
+                          className="px-3 py-1 rounded-full text-xs font-medium bg-[#9C8CFF]/15 border border-[#9C8CFF]/30 text-[#2B2B2B]"
+                        >
+                          {c.condition.replace(/_/g, ' ').replace(/\b\w/g, (ch) => ch.toUpperCase())}
+                          {' '}({(c.confidence * 100).toFixed(0)}%)
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -523,9 +511,9 @@ export function ResultPage() {
               </p>
             </div>
 
-            {filteredProducts.length > 0 ? (
+            {displayProducts.length > 0 ? (
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {filteredProducts.map((product, index) => (
+                {displayProducts.map((product, index) => (
                   <ProductCard
                     key={index}
                     {...product}
@@ -544,6 +532,42 @@ export function ResultPage() {
               </div>
             )}
           </div>
+
+          {/* Detected Conditions + Products (from pretrained model) */}
+          {conditionSections.length > 0 && (
+            <div className="mb-12 space-y-10">
+              <div className="text-center">
+                <h2 className="text-3xl font-bold text-[#2B2B2B] mb-2">
+                  Also Detected on Your Skin
+                </h2>
+                <p className="text-gray-600">
+                  Our AI identified additional skin concerns and curated products for each.
+                </p>
+              </div>
+
+              {conditionSections.map((section) => (
+                <div key={section.condition} className="bg-white rounded-3xl shadow-lg p-8">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="px-4 py-2 rounded-xl bg-[#9C8CFF]/15 border border-[#9C8CFF]/30">
+                      <span className="font-semibold text-[#2B2B2B]">{section.label}</span>
+                      <span className="text-sm text-gray-500 ml-2">
+                        {(section.confidence * 100).toFixed(0)}% confidence
+                      </span>
+                    </div>
+                  </div>
+                  <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {section.products.map((product, idx) => (
+                      <ProductCard
+                        key={idx}
+                        {...product}
+                        onBuyNow={() => setSelectedProduct(product.name)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
