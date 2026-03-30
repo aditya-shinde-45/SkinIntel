@@ -8,44 +8,19 @@ services:
       - "5000:5000"
     env_file:
       - ./backend/.env
-    environment:
-      # Override Ollama URL to point to the ollama service
-      OLLAMA_URL: http://ollama:11434
     volumes:
-      - ./backend/models:/app/models
-      - ./backend/data:/app/data
-    depends_on:
-      - ollama
+      - ./models:/app/models:ro          # trained model (read-only)
+      - ./backend/data:/app/data:ro      # products CSV (read-only)
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/api/v1/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        # Empty = use nginx proxy (/api/ → backend), no hardcoded URL needed
         VITE_API_URL: ""
     ports:
       - "80:80"
     depends_on:
       - backend
     restart: unless-stopped
-
-  ollama:
-    image: ollama/ollama:latest
-    expose:
-      - "11434"
-    volumes:
-      - ollama_data:/root/.ollama
-    restart: unless-stopped
-    # Pull llava-phi3 on first start
-    entrypoint: ["/bin/sh", "-c", "ollama serve & sleep 5 && ollama pull llava-phi3 && wait"]
-
-volumes:
-  ollama_data:

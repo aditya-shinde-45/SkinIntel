@@ -1,26 +1,23 @@
 """
 AnalyzeController — POST /api/v1/analyze
 
-Runs three tasks concurrently via ThreadPoolExecutor:
-  1. Skin type CNN (trained)          → oily / dry / normal / combination
-  2. Condition detection (HF + vision) → acne / dark_circles / hyperpigmentation / etc.
-  3. LLM explanation (Ollama/static)  → runs inside InferenceService.predict()
-
-Total latency ≈ max(CNN, vision) instead of CNN + vision + LLM summed.
+Flow:
+  1. Preprocess uploaded image
+  2. Run concern CNN → top predicted skin concern + confidence
+  3. Fetch product recommendations for that concern
 """
 import logging
 import time
-from concurrent.futures import ThreadPoolExecutor, as_completed, TimeoutError as FuturesTimeout
 
 from flask import Blueprint, request
 
 from app.config import Config
-from app.ml.inference_service import InferenceService, ModelInferenceError
 from app.ml.condition_service import ConditionDetectionService
+from app.ml.inference_service import InferenceService, ModelInferenceError
+from app.middleware.auth_middleware import require_auth
 from app.response import error_response, success_response
 from app.services.image_preprocessor import ImagePreprocessorError, ImagePreprocessorService
 from app.services.recommendation_service import RecommendationService
-from app.middleware.auth_middleware import require_auth
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +28,6 @@ SUPPORTED_COUNTRIES = {"IN", "US", "UK", "CA", "AU", "DE", "FR", "JP"}
 _inference_service      = InferenceService()
 _condition_service      = ConditionDetectionService()
 _recommendation_service = RecommendationService()
-_executor               = ThreadPoolExecutor(max_workers=3, thread_name_prefix="analyze")
 
 
 def _get_preprocessor() -> ImagePreprocessorService:
@@ -45,7 +41,7 @@ def analyze():
     total_start = time.time()
     config = Config.from_env()
 
-    # ── Validate inputs ─────────────────────────────────────────────────────
+    # ── Validate inputs ──────────────────────────────────────────────────────
     country = request.form.get("country", "").strip().upper()
     if not country or country not in SUPPORTED_COUNTRIES:
         return error_response(
@@ -66,7 +62,7 @@ def analyze():
     limit  = min(int(request.form.get("limit", 10)), 50)
     offset = max(int(request.form.get("offset", 0)), 0)
 
-    # ── Get raw image bytes ─────────────────────────────────────────────────
+    # ── Preprocess image ─────────────────────────────────────────────────────
     preprocessor = _get_preprocessor()
     image_file = request.files.get("image")
     image_url  = request.form.get("image_url", "").strip()
@@ -74,7 +70,7 @@ def analyze():
     try:
         if image_file:
             raw_bytes = image_file.read()
-            image_file.seek(0)                          # reset for MIME check
+            image_file.seek(0)
             tensor = preprocessor.preprocess_file(image_file)
         elif image_url:
             raw_bytes = preprocessor._fetch_with_retry(image_url)
@@ -84,90 +80,61 @@ def analyze():
     except ImagePreprocessorError as e:
         return error_response(e.error_code, str(e), status_code=e.status_code)
 
-    # ── Run CNN inference (fast, no Ollama) ─────────────────────────────────
+    # ── CNN inference ────────────────────────────────────────────────────────
     inference_start = time.time()
     try:
-        # Get raw CNN prediction without LLM explanation yet
-        skin_result_raw = _executor.submit(_inference_service.predict_raw, tensor)
-        skin_result_raw = skin_result_raw.result(timeout=30)
-    except FuturesTimeout:
-        return error_response("request_timeout", "Skin type inference timed out.", status_code=504)
-    except ModelInferenceError as e:
-        logger.error("Skin type inference failed: %s", e)
+        conditions = _condition_service.detect(raw_bytes)
+    except Exception as e:
+        logger.error("Condition detection failed: %s", e)
         return error_response("model_inference_failed", str(e), status_code=500)
 
     inference_time_ms = (time.time() - inference_start) * 1000
 
-    # ── Condition detection (vision LLM — sequential with explanation) ───────
-    try:
-        conditions = _condition_service.detect(raw_bytes)
-    except Exception as e:
-        logger.warning("Condition detection failed (non-fatal): %s", e)
-        conditions = []
+    # Build result from top condition
+    if conditions:
+        top = conditions[0]
+        raw = {"skin_type": top["condition"], "confidence": top["confidence"], "probs": []}
+    else:
+        # Fallback: run inference_service directly on tensor
+        try:
+            raw = _inference_service.predict_raw(tensor)
+        except ModelInferenceError as e:
+            logger.error("Inference failed: %s", e)
+            return error_response("model_inference_failed", str(e), status_code=500)
 
-    # ── LLM explanation (uses conditions for richer text) ────────────────────
-    skin_result = _inference_service.build_result(skin_result_raw, conditions)
+    result = _inference_service.build_result(raw, conditions)
 
-    # ── Build combined concern list ──────────────────────────────────────────
-    # Primary: skin type concern (from trained model)
-    primary_concern = skin_result.effective_concern
-
-    # Secondary: detected conditions (from pretrained model), deduplicated
-    condition_concerns = [c["concern_tag"] for c in conditions if c["concern_tag"] != primary_concern]
-
-    # All unique concerns to fetch products for
-    all_concerns = [primary_concern] + condition_concerns
-
-    # ── Get products for each concern ────────────────────────────────────────
-    concern_products = {}
-    for concern in all_concerns:
-        rec = _recommendation_service.get_recommendations(
-            concern=concern,
-            country=country,
-            min_price=min_price,
-            max_price=max_price,
-            limit=limit,
-            offset=offset,
-        )
-        if not rec.no_results:
-            concern_products[concern] = {
-                "products": [_serialize_product(p) for p in rec.products],
-                "total_count": rec.total_count,
-            }
-
-    # Primary products (for backward compat)
-    primary_rec = concern_products.get(primary_concern, {"products": [], "total_count": 0})
+    # ── Product recommendations ──────────────────────────────────────────────
+    concern = result.effective_concern
+    rec = _recommendation_service.get_recommendations(
+        concern=concern,
+        country=country,
+        min_price=min_price,
+        max_price=max_price,
+        limit=limit,
+        offset=offset,
+    )
 
     total_time_ms = (time.time() - total_start) * 1000
 
     data = {
-        # Skin type result (Model 1)
-        "skin_type":      skin_result.concern_label,
-        "confidence":     round(skin_result.confidence, 4),
-        "low_confidence": skin_result.low_confidence,
-        "explanation":    skin_result.explanation,
-
-        # Detected conditions (Model 2)
-        "conditions": conditions,
-
-        # Products for primary skin type
-        "products":   primary_rec["products"],
-        "no_results": len(primary_rec["products"]) == 0,
-
-        # Products grouped by concern (skin type + all conditions)
-        "products_by_concern": concern_products,
-
-        # Legacy field for backward compat
-        "concern_label": skin_result.concern_label,
+        "skin_concern":   result.concern_label,
+        "confidence":     round(result.confidence, 4),
+        "low_confidence": result.low_confidence,
+        "explanation":    result.explanation,
+        "conditions":     conditions,
+        "products":       [_serialize_product(p) for p in rec.products],
+        "no_results":     rec.no_results,
+        "concern_label":  result.concern_label,
     }
 
     meta = {
-        "model_version":    config.MODEL_VERSION,
+        "model_version":     config.MODEL_VERSION,
         "inference_time_ms": round(inference_time_ms, 2),
-        "total_time_ms":    round(total_time_ms, 2),
-        "total_count":      primary_rec["total_count"],
-        "limit":            limit,
-        "offset":           offset,
+        "total_time_ms":     round(total_time_ms, 2),
+        "total_count":       rec.total_count,
+        "limit":             limit,
+        "offset":            offset,
         "conditions_detected": len(conditions),
     }
 
@@ -175,13 +142,6 @@ def analyze():
 
 
 def _serialize_product(p) -> dict:
-    # Use CSV image if available, otherwise fetch on-demand (cached)
-    image = p.image_url
-    if not image or "unsplash" in (image or ""):
-        if p.links.product_url:
-            from app.services.image_cache_service import get_product_image
-            image = get_product_image(p.links.product_url)
-
     return {
         "product_id":          p.product_id,
         "name":                p.name,
@@ -192,7 +152,7 @@ def _serialize_product(p) -> dict:
         "description":         p.description,
         "concern_tags":        p.concern_tags,
         "available_countries": p.available_countries,
-        "image_url":           image,
+        "image_url":           p.image_url,
         "links": {
             "amazon":      p.links.amazon,
             "nykaa":       p.links.nykaa,

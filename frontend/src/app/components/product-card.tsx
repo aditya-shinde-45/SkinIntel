@@ -20,18 +20,18 @@ interface ProductCardProps {
 
 export function ProductCard({ image, name, brand, price, rating, description, links }: ProductCardProps) {
   // Use direct product URL if available, otherwise fall back to store search links
-  const primaryUrl = links?.product_url
-    || links?.amazon
+  const primaryUrl = links?.amazon
     || links?.nykaa
-    || links?.flipkart;
+    || links?.flipkart
+    || links?.product_url;
 
-  const storeLabel = links?.product_url
-    ? 'LookFantastic'
-    : links?.amazon
+  const storeLabel = links?.amazon
     ? 'Amazon'
     : links?.nykaa
     ? 'Nykaa'
-    : 'Flipkart';
+    : links?.flipkart
+    ? 'Flipkart'
+    : 'Shop Now';
 
   return (
     <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 flex flex-col">

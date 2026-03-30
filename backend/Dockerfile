@@ -1,31 +1,40 @@
-FROM python:3.11-slim
-
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+# ── Stage 1: install deps ─────────────────────────────────────────────────────
+FROM python:3.11-slim AS deps
 
 WORKDIR /app
 
-# System deps for TensorFlow, bcrypt, Pillow
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
-    libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python deps first (layer cache)
 COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 
-# Copy application code
+# ── Stage 2: runtime image ────────────────────────────────────────────────────
+FROM python:3.11-slim AS runtime
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app
+
+WORKDIR /app
+
+# Only runtime system libs needed
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libgomp1 \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy installed packages from deps stage
+COPY --from=deps /install /usr/local
+
+# Copy only application code — no ml/, no dataset/, no .env
 COPY app ./app
-COPY ml ./ml
 COPY run.py wsgi.py ./
-
-# Models and data are mounted as volumes in docker-compose
-# but copy them here as fallback for standalone builds
-COPY models ./models
-COPY data ./data
 
 EXPOSE 5000
 
-# Use gunicorn in production; run.py handles model/dataset loading via wsgi
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "--timeout", "120", "wsgi:app"]
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:5000/api/v1/health || exit 1
+
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "1", "--threads", "4", "--timeout", "300", "--keep-alive", "5", "wsgi:app"]
