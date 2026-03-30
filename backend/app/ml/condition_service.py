@@ -245,7 +245,7 @@ class ConditionDetectionService:
                         "stream": False,
                         "options": {"temperature": 0.0, "num_predict": 60},
                     },
-                    timeout=90,
+                    timeout=300,
                 )
 
             if resp.status_code != 200:
