@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 OLLAMA_URL          = os.environ.get("OLLAMA_URL", "http://localhost:11434")
 CONDITION_THRESHOLD = float(os.environ.get("CONDITION_THRESHOLD", "0.20"))
 
-_preferred_vision = os.environ.get("OLLAMA_VISION_MODEL", "llava-phi3").strip()
+_preferred_vision = os.environ.get("OLLAMA_VISION_MODEL", "moondream").strip()
 _fallback_vision = [
     m.strip() for m in os.environ.get("OLLAMA_VISION_MODEL_FALLBACKS", "llava,moondream,llava:13b").split(",")
     if m.strip()
