@@ -343,6 +343,7 @@ export function ResultPage() {
 
 
 
+
                 {/* Detected conditions badges */}
                 {usingRealData && apiResult!.conditions?.length > 0 && (
                   <div>

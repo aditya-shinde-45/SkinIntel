@@ -5,7 +5,7 @@ export function Footer() {
   return (
     <footer className="bg-white border-t border-gray-200 mt-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* About Section */}
           <div>
             <h4 className="font-bold text-lg mb-4 text-[#2B2B2B]">About SkinIntel</h4>
@@ -27,28 +27,6 @@ export function Footer() {
                 <Link to="/analyze" className="text-sm text-gray-600 hover:text-[#3EB6B1] transition-colors">
                   Analyze Skin
                 </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Legal */}
-          <div>
-            <h4 className="font-bold text-lg mb-4 text-[#2B2B2B]">Legal</h4>
-            <ul className="space-y-2">
-              <li>
-                <a href="#" className="text-sm text-gray-600 hover:text-[#3EB6B1] transition-colors">
-                  Privacy Policy
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-sm text-gray-600 hover:text-[#3EB6B1] transition-colors">
-                  Terms of Service
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-sm text-gray-600 hover:text-[#3EB6B1] transition-colors">
-                  Disclaimer
-                </a>
               </li>
             </ul>
           </div>

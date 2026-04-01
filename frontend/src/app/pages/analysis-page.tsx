@@ -234,49 +234,58 @@ export function AnalysisPage() {
                   </span>
                 </div>
 
-                {/* Dual-thumb slider */}
-                <div className="relative h-6 flex items-center">
-                  {/* Track background */}
-                  <div className="absolute w-full h-2 bg-gray-200 rounded-full" />
-
-                  {/* Active track fill */}
-                  <div
-                    className="absolute h-2 bg-[#3EB6B1] rounded-full"
-                    style={{
-                      left: `${((priceRange[0] - 0) / 3000) * 100}%`,
-                      right: `${100 - ((priceRange[1] - 0) / 3000) * 100}%`,
-                    }}
-                  />
-
-                  {/* Min thumb */}
-                  <input
-                    type="range"
-                    min="0"
-                    max="3000"
-                    step="50"
-                    value={priceRange[0]}
-                    onChange={(e) => handleMinPriceChange(parseInt(e.target.value, 10))}
-                    className="absolute w-full h-2 appearance-none bg-transparent cursor-pointer range-thumb"
-                    style={{ zIndex: priceRange[0] > 2800 ? 5 : 3 }}
-                  />
-
-                  {/* Max thumb */}
-                  <input
-                    type="range"
-                    min="0"
-                    max="3000"
-                    step="50"
-                    value={priceRange[1]}
-                    onChange={(e) => handleMaxPriceChange(parseInt(e.target.value, 10))}
-                    className="absolute w-full h-2 appearance-none bg-transparent cursor-pointer range-thumb"
-                    style={{ zIndex: 4 }}
-                  />
+                {/* Min slider */}
+                <div>
+                  <div className="flex justify-between text-xs text-gray-500 mb-1">
+                    <span>Minimum</span>
+                    <span>₹{priceRange[0].toLocaleString()}</span>
+                  </div>
+                  <div className="relative h-5 flex items-center">
+                    <div className="absolute w-full h-2 bg-gray-200 rounded-full" />
+                    <div
+                      className="absolute h-2 bg-[#3EB6B1] rounded-full"
+                      style={{ width: `${(priceRange[0] / 3000) * 100}%` }}
+                    />
+                    <input
+                      type="range"
+                      min="0"
+                      max="3000"
+                      step="50"
+                      value={priceRange[0]}
+                      onChange={(e) => handleMinPriceChange(parseInt(e.target.value, 10))}
+                      className="absolute w-full h-2 appearance-none bg-transparent cursor-pointer range-thumb"
+                    />
+                  </div>
                 </div>
 
-                {/* Scale labels — evenly spaced to match slider */}
-                <div className="flex justify-between text-xs text-gray-400 px-1">
+                {/* Max slider */}
+                <div>
+                  <div className="flex justify-between text-xs text-gray-500 mb-1">
+                    <span>Maximum</span>
+                    <span>₹{priceRange[1].toLocaleString()}</span>
+                  </div>
+                  <div className="relative h-5 flex items-center">
+                    <div className="absolute w-full h-2 bg-gray-200 rounded-full" />
+                    <div
+                      className="absolute h-2 bg-[#3EB6B1] rounded-full"
+                      style={{ width: `${(priceRange[1] / 3000) * 100}%` }}
+                    />
+                    <input
+                      type="range"
+                      min="0"
+                      max="3000"
+                      step="50"
+                      value={priceRange[1]}
+                      onChange={(e) => handleMaxPriceChange(parseInt(e.target.value, 10))}
+                      className="absolute w-full h-2 appearance-none bg-transparent cursor-pointer range-thumb"
+                    />
+                  </div>
+                </div>
+
+                {/* Scale labels */}
+                <div className="flex justify-between text-xs text-gray-400">
                   {[0, 500, 1000, 1500, 2000, 2500, 3000].map((v) => (
-                    <span key={v}>₹{v === 0 ? '0' : v >= 1000 ? `${v/1000}k` : v}</span>
+                    <span key={v}>₹{v >= 1000 ? `${v / 1000}k` : v}</span>
                   ))}
                 </div>
               </div>
