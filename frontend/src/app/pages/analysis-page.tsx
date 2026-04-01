@@ -15,7 +15,7 @@ export function AnalysisPage() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedImageName, setSelectedImageName] = useState('');
   const [country, setCountry] = useState('');
-  const [priceRange, setPriceRange] = useState([200, 2000]);
+  const [priceRange, setPriceRange] = useState([0, 2000]);
   const [isDragging, setIsDragging] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -227,55 +227,57 @@ export function AnalysisPage() {
               </label>
 
               <div className="space-y-4">
-
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-gray-600">Budget</span>
-
                   <span className="font-semibold text-[#3EB6B1]">
-                    ₹{priceRange[0]} - ₹{priceRange[1]}
+                    ₹{priceRange[0].toLocaleString()} – ₹{priceRange[1].toLocaleString()}
                   </span>
                 </div>
 
-                <div className="space-y-4">
-                  <div>
-                    <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
-                      <span>Minimum</span>
-                      <span>₹{priceRange[0]}</span>
-                    </div>
-                    <input
-                      type="range"
-                      min="200"
-                      max="3000"
-                      step="100"
-                      value={priceRange[0]}
-                      onChange={(e) => handleMinPriceChange(parseInt(e.target.value, 10))}
-                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#3EB6B1]"
-                    />
-                  </div>
+                {/* Dual-thumb slider */}
+                <div className="relative h-6 flex items-center">
+                  {/* Track background */}
+                  <div className="absolute w-full h-2 bg-gray-200 rounded-full" />
 
-                  <div>
-                    <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
-                      <span>Maximum</span>
-                      <span>₹{priceRange[1]}</span>
-                    </div>
-                    <input
-                      type="range"
-                      min="200"
-                      max="3000"
-                      step="100"
-                      value={priceRange[1]}
-                      onChange={(e) => handleMaxPriceChange(parseInt(e.target.value, 10))}
-                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#3EB6B1]"
-                    />
-                  </div>
+                  {/* Active track fill */}
+                  <div
+                    className="absolute h-2 bg-[#3EB6B1] rounded-full"
+                    style={{
+                      left: `${((priceRange[0] - 0) / 3000) * 100}%`,
+                      right: `${100 - ((priceRange[1] - 0) / 3000) * 100}%`,
+                    }}
+                  />
+
+                  {/* Min thumb */}
+                  <input
+                    type="range"
+                    min="0"
+                    max="3000"
+                    step="50"
+                    value={priceRange[0]}
+                    onChange={(e) => handleMinPriceChange(parseInt(e.target.value, 10))}
+                    className="absolute w-full h-2 appearance-none bg-transparent cursor-pointer range-thumb"
+                    style={{ zIndex: priceRange[0] > 2800 ? 5 : 3 }}
+                  />
+
+                  {/* Max thumb */}
+                  <input
+                    type="range"
+                    min="0"
+                    max="3000"
+                    step="50"
+                    value={priceRange[1]}
+                    onChange={(e) => handleMaxPriceChange(parseInt(e.target.value, 10))}
+                    className="absolute w-full h-2 appearance-none bg-transparent cursor-pointer range-thumb"
+                    style={{ zIndex: 4 }}
+                  />
                 </div>
 
-                <div className="flex justify-between text-xs text-gray-500">
-                  <span>₹200</span>
-                  <span>₹500</span>
-                  <span>₹1000</span>
-                  <span>₹2000</span>
-                  <span>₹3000+</span>
+                {/* Scale labels — evenly spaced to match slider */}
+                <div className="flex justify-between text-xs text-gray-400 px-1">
+                  {[0, 500, 1000, 1500, 2000, 2500, 3000].map((v) => (
+                    <span key={v}>₹{v === 0 ? '0' : v >= 1000 ? `${v/1000}k` : v}</span>
+                  ))}
                 </div>
               </div>
             </div>

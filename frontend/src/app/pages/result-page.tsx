@@ -341,16 +341,7 @@ export function ResultPage() {
                   </div>
                 )}
 
-                {usingRealData && apiMeta && (
-                  <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 text-xs text-gray-500 space-y-1">
-                    <p>Model version: {apiMeta.model_version}</p>
-                    <p>Inference time: {apiMeta.inference_time_ms?.toFixed(1)} ms</p>
-                    <p>Total products found: {apiMeta.total_count}</p>
-                    {apiMeta.conditions_detected !== undefined && (
-                      <p>Additional conditions detected: {apiMeta.conditions_detected}</p>
-                    )}
-                  </div>
-                )}
+
 
                 {/* Detected conditions badges */}
                 {usingRealData && apiResult!.conditions?.length > 0 && (

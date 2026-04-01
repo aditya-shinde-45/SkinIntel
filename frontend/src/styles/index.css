@@ -1,3 +1,29 @@
 @import './fonts.css';
 @import './tailwind.css';
 @import './theme.css';
+
+/* Dual-thumb range slider */
+input[type='range'].range-thumb {
+  pointer-events: none;
+}
+input[type='range'].range-thumb::-webkit-slider-thumb {
+  pointer-events: all;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #3EB6B1;
+  border: 2px solid white;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+input[type='range'].range-thumb::-moz-range-thumb {
+  pointer-events: all;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #3EB6B1;
+  border: 2px solid white;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  cursor: pointer;
+}
