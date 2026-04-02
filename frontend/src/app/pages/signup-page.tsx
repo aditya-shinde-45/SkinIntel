@@ -8,7 +8,7 @@ import { apiRegister, setToken, setUser } from '../utils/api';
 export function SignupPage() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    fullName: '', email: '', password: '', confirmPassword: '', country: '', agreeToTerms: false,
+    fullName: '', email: '', password: '', confirmPassword: '',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -30,7 +30,6 @@ export function SignupPage() {
         full_name: formData.fullName,
         email: formData.email,
         password: formData.password,
-        country: formData.country,
       });
       if (!res.success) {
         setError(res.error?.message || 'Registration failed.');
@@ -124,50 +123,6 @@ export function SignupPage() {
                 onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                 required
               />
-
-              <div className="flex flex-col gap-2 w-full">
-                <label className="text-sm font-medium text-[#2B2B2B]">
-                  Country
-                </label>
-                <select
-                  value={formData.country}
-                  onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-[#3EB6B1] focus:border-transparent transition-all duration-200"
-                  required
-                >
-                  <option value="">Select your country</option>
-                  <option value="US">United States</option>
-                  <option value="UK">United Kingdom</option>
-                  <option value="IN">India</option>
-                  <option value="CA">Canada</option>
-                  <option value="AU">Australia</option>
-                  <option value="DE">Germany</option>
-                  <option value="FR">France</option>
-                  <option value="JP">Japan</option>
-                  <option value="BR">Brazil</option>
-                  <option value="MX">Mexico</option>
-                </select>
-              </div>
-
-              <label className="flex items-start gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.agreeToTerms}
-                  onChange={(e) => setFormData({ ...formData, agreeToTerms: e.target.checked })}
-                  className="w-4 h-4 mt-1 rounded border-gray-300 text-[#3EB6B1] focus:ring-[#3EB6B1]"
-                  required
-                />
-                <span className="text-sm text-gray-600">
-                  I agree to the{' '}
-                  <a href="#" className="text-[#3EB6B1] hover:underline">
-                    Terms & Conditions
-                  </a>{' '}
-                  and{' '}
-                  <a href="#" className="text-[#3EB6B1] hover:underline">
-                    Privacy Policy
-                  </a>
-                </span>
-              </label>
 
               <Button type="submit" className="w-full" size="lg" disabled={loading}>
                 {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Creating account...</> : 'Create Account'}

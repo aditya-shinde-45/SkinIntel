@@ -102,9 +102,6 @@ export function LoginPage() {
                   />
                   <span className="text-sm text-gray-600">Remember me</span>
                 </label>
-                <a href="#" className="text-sm text-[#3EB6B1] hover:underline">
-                  Forgot Password?
-                </a>
               </div>
 
               <Button type="submit" className="w-full" size="lg" disabled={loading}>
