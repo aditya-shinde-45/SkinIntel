@@ -4,6 +4,7 @@ import { Navbar } from '../components/navbar';
 import { Footer } from '../components/footer';
 import { Button } from '../components/button';
 import { Upload, Sparkles, Loader2 } from 'lucide-react';
+import { formatCurrencyAmount } from '../utils/currency';
 
 const API_BASE = import.meta.env.VITE_API_URL || '';
 
@@ -230,7 +231,7 @@ export function AnalysisPage() {
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-gray-600">Budget</span>
                   <span className="font-semibold text-[#3EB6B1]">
-                    ₹{priceRange[0].toLocaleString()} – ₹{priceRange[1].toLocaleString()}
+                    {formatCurrencyAmount(priceRange[0], country)} – {formatCurrencyAmount(priceRange[1], country)}
                   </span>
                 </div>
 
@@ -238,7 +239,7 @@ export function AnalysisPage() {
                 <div>
                   <div className="flex justify-between text-xs text-gray-500 mb-1">
                     <span>Minimum</span>
-                    <span>₹{priceRange[0].toLocaleString()}</span>
+                    <span>{formatCurrencyAmount(priceRange[0], country)}</span>
                   </div>
                   <div className="relative h-5 flex items-center">
                     <div className="absolute w-full h-2 bg-gray-200 rounded-full" />
@@ -262,7 +263,7 @@ export function AnalysisPage() {
                 <div>
                   <div className="flex justify-between text-xs text-gray-500 mb-1">
                     <span>Maximum</span>
-                    <span>₹{priceRange[1].toLocaleString()}</span>
+                    <span>{formatCurrencyAmount(priceRange[1], country)}</span>
                   </div>
                   <div className="relative h-5 flex items-center">
                     <div className="absolute w-full h-2 bg-gray-200 rounded-full" />
@@ -285,7 +286,7 @@ export function AnalysisPage() {
                 {/* Scale labels */}
                 <div className="flex justify-between text-xs text-gray-400">
                   {[0, 500, 1000, 1500, 2000, 2500, 3000].map((v) => (
-                    <span key={v}>₹{v >= 1000 ? `${v / 1000}k` : v}</span>
+                    <span key={v}>{formatCurrencyAmount(v, country)}</span>
                   ))}
                 </div>
               </div>

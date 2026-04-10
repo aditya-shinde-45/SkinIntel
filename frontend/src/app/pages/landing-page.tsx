@@ -68,22 +68,6 @@ export function LandingPage() {
                   </Button>
                 </Link>
               </div>
-
-              {/* Stats */}
-              <div className="grid grid-cols-3 gap-6 pt-8">
-                <div>
-                  <div className="text-3xl font-bold text-[#3EB6B1]">98%</div>
-                  <div className="text-sm text-gray-600">Accuracy</div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-[#9C8CFF]">1000+</div>
-                  <div className="text-sm text-gray-600">Products</div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-[#FFB6A3]">50+</div>
-                  <div className="text-sm text-gray-600">Countries</div>
-                </div>
-              </div>
             </div>
 
             {/* Right Image */}

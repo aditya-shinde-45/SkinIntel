@@ -4,6 +4,7 @@ import { Footer } from '../components/footer';
 import { ProductCard } from '../components/product-card';
 import { Button } from '../components/button';
 import { CheckCircle, X } from 'lucide-react';
+import { formatCurrencyAmount, formatCurrencyPrice } from '../utils/currency';
 
 
 interface ProductItem {
@@ -137,12 +138,12 @@ function detectConcernFromImageName(imageName?: string): ConcernKey {
   return 'general';
 }
 
-function apiProductToItem(p: ApiProduct): ProductItem {
+function apiProductToItem(p: ApiProduct, country?: string): ProductItem {
   return {
     image: p.image_url || 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=400',
     name: p.name,
     brand: p.brand,
-    price: '',   // price shown on store website, not here
+    price: formatCurrencyAmount(p.price, country),
     rating: Math.round(p.rating),
     description: p.description,
     availability: ['Amazon', 'Nykaa', 'Flipkart'],
@@ -158,6 +159,7 @@ export function ResultPage() {
     (location.state as {
       image?: string;
       imageName?: string;
+      country?: string;
       priceRange?: number[];
       apiResult?: {
         skin_type: string;
@@ -178,8 +180,11 @@ export function ResultPage() {
       };
     } | undefined) || {};
 
+  const country = (location.state as { country?: string } | undefined)?.country;
+
   const selectedRange =
     Array.isArray(priceRange) && priceRange.length === 2 ? priceRange : [200, 3000];
+  const selectedCountry = country || 'IN';
 
   const usingRealData = !!apiResult;
 
@@ -196,11 +201,14 @@ export function ResultPage() {
 
   // Primary skin type products
   const displayProducts: ProductItem[] = usingRealData
-    ? apiResult!.products.map(apiProductToItem)
+    ? apiResult!.products.map((product) => apiProductToItem(product, selectedCountry))
     : concern.products.filter((p) => {
         const n = Number(p.price.replace(/[^\d]/g, ''));
         return n >= selectedRange[0] && n <= selectedRange[1];
-      });
+      }).map((p) => ({
+        ...p,
+        price: formatCurrencyPrice(p.price, selectedCountry),
+      }));
 
   // Condition-specific product sections (from pretrained model)
   const conditionSections: { label: string; condition: string; confidence: number; products: ProductItem[] }[] =
@@ -347,9 +355,6 @@ export function ResultPage() {
                 {/* Detected conditions badges */}
                 {usingRealData && apiResult!.conditions?.length > 0 && (
                   <div>
-                    <h3 className="font-semibold text-sm text-[#2B2B2B] mb-2">
-                      Also detected:
-                    </h3>
                     <div className="flex flex-wrap gap-2">
                       {apiResult!.conditions.map((c) => (
                         <span
@@ -385,7 +390,7 @@ export function ResultPage() {
                 Recommended Products
               </h2>
               <p className="text-lg text-gray-600">
-                Showing products in your selected range: ₹{selectedRange[0]} - ₹{selectedRange[1]}
+                Showing products in your selected range: {formatCurrencyAmount(selectedRange[0], selectedCountry)} - {formatCurrencyAmount(selectedRange[1], selectedCountry)}
               </p>
             </div>
 
@@ -415,7 +420,7 @@ export function ResultPage() {
             <div className="mb-12 space-y-10">
               <div className="text-center">
                 <h2 className="text-3xl font-bold text-[#2B2B2B] mb-2">
-                  Also Detected on Your Skin
+                  Detected on Your Skin
                 </h2>
                 <p className="text-gray-600">
                   Our AI identified additional skin concerns and curated products for each.
