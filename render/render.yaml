@@ -1,0 +1,44 @@
+services:
+  - type: web
+    name: skinintel-backend
+    env: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 300 wsgi:app
+    healthCheckPath: /api/v1/health
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: ENV
+        value: prod
+      - key: MODEL_PATH
+        value: models/model.keras
+      - key: CONCERN_MODEL_PATH
+        value: models/model.keras
+      - key: PRODUCTS_CSV_PATH
+        value: data/skincare_products_clean.csv
+      - key: MODEL_VERSION
+        value: 1.0.0
+      - key: ALLOWED_ORIGIN
+        value: https://your-frontend.onrender.com
+      - key: MAX_IMAGE_SIZE_MB
+        value: 10
+      - key: RATE_LIMIT_PER_MINUTE
+        value: 30
+      - key: CONFIDENCE_THRESHOLD
+        value: 0.40
+      - key: JWT_EXPIRY_HOURS
+        value: 24
+      - key: AWS_REGION
+        value: ap-south-1
+      - key: DYNAMODB_TABLE
+        value: skinintel_users
+      - key: JWT_SECRET
+        sync: false
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: DYNAMODB_ENDPOINT
+        sync: false
