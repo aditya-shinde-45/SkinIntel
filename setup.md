@@ -13,7 +13,7 @@ It includes:
 ## 1. Project Overview
 
 SkinIntel runs 3 services in container mode:
-- frontend: React + Vite app served by Nginx on port 80
+- frontend: React + Vite app served by Nginx on port 80 inside the container, exposed on host port 3001
 - backend: Flask API (Gunicorn) on port 5000
 - ollama: local LLM and vision model runtime
 
@@ -96,7 +96,7 @@ docker compose up --build
 
 Expected behavior:
 - backend builds and starts Gunicorn
-- frontend builds and serves on port 80
+- frontend builds and serves on host port 3001
 - ollama service starts and pulls llava-phi3 on first boot
 
 First startup can take several minutes because model pull is large.
